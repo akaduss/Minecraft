@@ -33,15 +33,18 @@ public class Quad
         switch (blockSide)
         {
             case MeshUtils.BlockSide.Front:
-                vertices = new Vector3[] { p0, p1, p2, p3 }; //clockwise
+                //vertices = new Vector3[] { p0, p1, p2, p3 }; //clockwise
+                vertices = new Vector3[] { p2,p3,p0,p1 }; //clockwise
                 break;
 
             case MeshUtils.BlockSide.Back:
-                vertices = new Vector3[] { p7, p6, p5, p4 };
+                //vertices = new Vector3[] { p7, p6, p5, p4 };
+                vertices = new Vector3[] { p5, p4, p7, p6 };
                 break;
 
             case MeshUtils.BlockSide.Right:
-                vertices = new Vector3[] { p3, p2, p6, p7 };
+                //vertices = new Vector3[] { p3, p2, p6, p7 };
+                vertices = new Vector3[] { p6, p7, p3, p2 };
                 break;
 
             case MeshUtils.BlockSide.Left:

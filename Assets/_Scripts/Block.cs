@@ -10,18 +10,34 @@ public class Block
     public Block(Vector3 offset, BlockTypes blockType, Chunk chunk)
     {
         parentChunk = chunk;
+        offset -= chunk.location;
 
         if(blockType == BlockTypes.Air) return;
 
         List<Quad> quads = new();
 
+
         if (HasSolidNeighbour((int)offset.x, (int)offset.y - 1, (int)offset.z ) == false)
         {
-            quads.Add(new(BlockSide.Bottom, offset, blockType));
+            if (blockType == BlockTypes.GrassSide)
+            {
+                quads.Add(new(BlockSide.Bottom, offset, BlockTypes.Dirt));
+            }
+            else
+            {
+                quads.Add(new(BlockSide.Bottom, offset, blockType));
+            }
         }
         if (HasSolidNeighbour((int)offset.x, (int)offset.y + 1, (int)offset.z ) == false)
         {
-            quads.Add(new(BlockSide.Top, offset, blockType));
+            if(blockType == BlockTypes.GrassSide)
+            {
+                quads.Add(new(BlockSide.Top, offset, BlockTypes.GrassTop));
+            }
+            else
+            {
+                quads.Add(new(BlockSide.Top, offset, blockType));
+            }
         }
 
         if (HasSolidNeighbour((int)offset.x - 1, (int)offset.y, (int)offset.z ) == false)

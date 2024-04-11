@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 public class Chunk : MonoBehaviour
@@ -14,28 +14,187 @@ public class Chunk : MonoBehaviour
     public int width = 2;
     public Block[,,] blocks;
     public MeshUtils.BlockTypes[] chunkData;
+    public MeshRenderer MeshRenderer;
+    public NativeArray<Unity.Mathematics.Random> RandomArray { get; private set; }
+
+    public Vector3 location;
+
+    // Flatten the 3D array into a 1D array
+    // Flat[x + width * (y + depth * z)] = Original[x, y, z]
+    // Flat to 3D:
+    // x = i % width
+    // y = (i / width) % height
+    // z = i / (width * height)
+
+    private const float valuableProbability = 0.05f;
+    private const float CoalProbability = 0.03f;
+
+    CalculateBlockTypeDataJob processPerlinDataJob;
+    JobHandle processPerlinJobHandle;
 
     private void BuildChunkData()
     {
         int totalSize = width * height * depth;
         chunkData = new MeshUtils.BlockTypes[totalSize];
+        NativeArray<MeshUtils.BlockTypes> chunkDataNative = new(chunkData, Allocator.Persistent);
+        NativeArray<Unity.Mathematics.Random> randomArray = new(totalSize, Allocator.Persistent);
+
         for (int i = 0; i < totalSize; i++)
         {
-            if(UnityEngine.Random.value > 0.5f)
-                chunkData[i] = MeshUtils.BlockTypes.Dirt;
-            else
-                chunkData[i] = MeshUtils.BlockTypes.GrassTop;
+            randomArray[i] = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, int.MaxValue));
         }
+
+
+        processPerlinDataJob = new()
+        {
+            chunkData = chunkDataNative,
+            width = width,
+            height = height,
+            location = location,
+            randomArray = randomArray
+        };
+
+        processPerlinJobHandle = processPerlinDataJob.Schedule(totalSize, 64);
+        processPerlinJobHandle.Complete();
+
+        processPerlinDataJob.chunkData.CopyTo(chunkData);
+        chunkDataNative.Dispose();
+        randomArray.Dispose();
     }
 
-    void Start()
+    private static Vector3 GetBlockPosition(int index, int width, int height, Vector3 location)
     {
+        float x = index % width + location.x;
+        float y = (index / width) % height + location.y;
+        float z = index / (width * height) + location.z;
+        return new Vector3(x, y, z);
+    }
+
+    private static MeshUtils.BlockTypes DetermineBlockType(Vector3 blockPosition, float random)
+    {
+        int surfaceHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.surfacePerlinSettings.octaves, World.surfacePerlinSettings.scale, World.surfacePerlinSettings.heightScale, World.surfacePerlinSettings.heightOffset);
+        int stoneHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.stonePerlinSettings.octaves, World.stonePerlinSettings.scale, World.stonePerlinSettings.heightScale, World.stonePerlinSettings.heightOffset);
+        int ironHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.ironPerlinSettings.octaves, World.ironPerlinSettings.scale, World.ironPerlinSettings.heightScale, World.ironPerlinSettings.heightOffset);
+        int valuableHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.valuablesPerlinSettings.octaves, World.valuablesPerlinSettings.scale, World.valuablesPerlinSettings.heightScale, World.valuablesPerlinSettings.heightOffset);
+        int diamondHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.diamondPerlinSettings.octaves, World.diamondPerlinSettings.scale, World.diamondPerlinSettings.heightScale, World.diamondPerlinSettings.heightOffset);
+        int bedrockHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.bedrockPerlinSettings.octaves, World.bedrockPerlinSettings.scale, World.bedrockPerlinSettings.heightScale, World.bedrockPerlinSettings.heightOffset);
+        int digCave = (int)MeshUtils.FractialBrownianMotion3D(blockPosition.x, blockPosition.y, blockPosition.z, World.cavePerlinSettings.octaves, World.cavePerlinSettings.scale, World.cavePerlinSettings.heightScale, World.cavePerlinSettings.heightOffset);
+
+        if (digCave < World.cavePerlinSettings.drawCutOff && blockPosition.y > bedrockHeight)
+        {
+            return MeshUtils.BlockTypes.Air;
+        }
+
+        if (blockPosition.y > surfaceHeight)
+        {
+            return MeshUtils.BlockTypes.Air;
+        }
+        else if (blockPosition.y == surfaceHeight)
+        {
+            return MeshUtils.BlockTypes.GrassSide;
+        }
+        else if (stoneHeight < blockPosition.y)
+        {
+            return MeshUtils.BlockTypes.Dirt;
+        }
+        else if (blockPosition.y > ironHeight)
+        {
+            if (random < CoalProbability)
+            {
+                return MeshUtils.BlockTypes.Coal;
+            }
+            else
+            {
+                return MeshUtils.BlockTypes.Stone;
+            }
+        }
+        else if (blockPosition.y > valuableHeight)
+        {
+            if (random < 0.04f)
+            {
+                return MeshUtils.BlockTypes.Iron;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Coal;
+            }
+            else
+            {
+                return MeshUtils.BlockTypes.Stone;
+            }
+        }
+        else if (blockPosition.y > diamondHeight)
+        {
+            if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Coal;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Iron;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Gold;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Redstone;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Lapis;
+            }
+            else
+            {
+                return MeshUtils.BlockTypes.Stone;
+            }
+        }
+        else if (blockPosition.y > bedrockHeight)
+        {
+            if (random < World.diamondPerlinSettings.probability)
+            {
+                return MeshUtils.BlockTypes.Diamond;
+            }
+            else if (random < CoalProbability)
+            {
+                return MeshUtils.BlockTypes.Coal;
+            }
+            else if (random < CoalProbability)
+            {
+                return MeshUtils.BlockTypes.Iron;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Gold;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Redstone;
+            }
+            else if (random < valuableProbability)
+            {
+                return MeshUtils.BlockTypes.Lapis;
+            }
+            else
+            {
+                return MeshUtils.BlockTypes.Stone;
+            }
+        }
+        else
+        {
+            return MeshUtils.BlockTypes.Bedrock;
+        }
+    }
+    public void CreateChunk(Vector3 position)
+    {
+        location = position;
+
         MeshFilter mf = gameObject.AddComponent<MeshFilter>();
         MeshRenderer mr = gameObject.AddComponent<MeshRenderer>();
         mr.material = blockAtlas;
+        MeshRenderer = mr;
         blocks = new Block[width, height, depth];
-        print(blocks[0,0,0]);
-        print(blocks[0,0,1]);
         BuildChunkData();
 
         List<Mesh> inputMeshes = new();
@@ -56,7 +215,7 @@ public class Chunk : MonoBehaviour
             {
                 for (int x = 0; x < width; x++)
                 {
-                    blocks[x,y,z] = new(new Vector3(x, y, z), chunkData[x + width * (y + depth * z) ], this );
+                    blocks[x,y,z] = new(new Vector3(x, y, z) + location, chunkData[x + width * (y + depth * z) ], this );
                     if (blocks[x, y, z].mesh == null) continue;
 
                     inputMeshes.Add(blocks[x, y, z].mesh);
@@ -89,7 +248,7 @@ public class Chunk : MonoBehaviour
 
         Mesh newMesh = new()
         {
-            name = "Chunk Mesh"
+            name = $"Chunk_{location.x}_{location.y}_{location.z}"
         };
 
         SubMeshDescriptor subMeshDescriptor = new(0, triangleStart, MeshTopology.Triangles)
@@ -111,6 +270,7 @@ public class Chunk : MonoBehaviour
 
         newMesh.RecalculateBounds();
         mf.mesh = newMesh;
+        gameObject.AddComponent<MeshCollider>().sharedMesh = mf.mesh;
 
     }
 
@@ -178,6 +338,24 @@ public class Chunk : MonoBehaviour
                 tris.Dispose();
             }
 
+        }
+    }
+
+    [BurstCompile]
+    struct CalculateBlockTypeDataJob : IJobParallelFor
+    {
+        public NativeArray<MeshUtils.BlockTypes> chunkData;
+        public int width;
+        public int height;
+        public Vector3 location;
+        public NativeArray<Unity.Mathematics.Random> randomArray;
+
+        public void Execute(int index)
+        {
+            Vector3 blockPosition = GetBlockPosition(index, width, height, location);
+            float random = randomArray[index].NextFloat(1);
+            MeshUtils.BlockTypes blockType = DetermineBlockType(blockPosition, random);
+            chunkData[index] = blockType;
         }
     }
 
