@@ -247,7 +247,9 @@ public class Chunk : MonoBehaviour
 
         Mesh newMesh = new()
         {
+            #if UNITY_EDITOR
             name = $"Chunk_{location.x}_{location.y}_{location.z}"
+            #endif
         };
 
         SubMeshDescriptor subMeshDescriptor = new(0, triangleStart, MeshTopology.Triangles)

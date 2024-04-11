@@ -457,6 +457,7 @@ GameObject:
   - component: {fileID: 1336890044}
   - component: {fileID: 1336890043}
   - component: {fileID: 1336890042}
+  - component: {fileID: 1336890046}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -547,6 +548,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1336890046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336890041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92fdac57d061ce140811b72167e2f198, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1402911529 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8352793618827180980, guid: fff02cef22bf8074f9d37ff0aed63a10,
@@ -588,8 +601,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cc00a67a64b22e4eb4083978a47073a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WorldDimensions: {x: 3, y: 9, z: 3}
-  ExtraWorldDimensions: {x: 10, y: 9, z: 10}
+  WorldDimensions: {x: 20, y: 9, z: 20}
+  ExtraWorldDimensions: {x: 0, y: 0, z: 0}
   ChunkDimensions: {x: 10, y: 10, z: 10}
   ChunkPrefab: {fileID: 3433278460374050753, guid: 2763e9d5837cb954480033714c8ca6b8,
     type: 3}
