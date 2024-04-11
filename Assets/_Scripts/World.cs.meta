@@ -3,7 +3,18 @@ guid: 6cc00a67a64b22e4eb4083978a47073a
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - ChunkPrefab: {instanceID: 0}
+  - Player: {instanceID: 0}
+  - LoadingBarSlider: {instanceID: 0}
+  - caveGraph: {instanceID: 0}
+  - surfaceGraph: {fileID: 3609899887583352637, guid: 85099448bcac64d4aa2088091d55513c,
+      type: 3}
+  - stoneGraph: {instanceID: 0}
+  - ironGraph: {instanceID: 0}
+  - valuablesGraph: {instanceID: 0}
+  - diamondGraph: {instanceID: 0}
+  - bedrockGraph: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
