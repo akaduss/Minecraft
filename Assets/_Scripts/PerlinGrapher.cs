@@ -1,13 +1,12 @@
-using System.ComponentModel;
 using UnityEngine;
 
 public struct PerlinSettings
 {
-    public readonly float scale;
-    public readonly int octaves;
-    public readonly float heightScale;
-    public readonly float heightOffset;
-    public readonly float probability;
+    public float scale;
+    public int octaves;
+    public float heightScale;
+    public float heightOffset;
+    public float probability;
 
     public PerlinSettings(float scale, int octaves, float heightScale, float heightOffset, float probability)
     {
@@ -21,11 +20,11 @@ public struct PerlinSettings
 
 public struct Perlin3DSettings
 {
-    public readonly float scale;
-    public readonly int octaves;
-    public readonly float heightScale;
-    public readonly float heightOffset;
-    public readonly float drawCutOff;
+    public float scale;
+    public int octaves;
+    public float heightScale;
+    public float heightOffset;
+    public float drawCutOff;
 
     public Perlin3DSettings(float scale, int octaves, float heightScale, float heightOffset, float drawCutOff)
     {

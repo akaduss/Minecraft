@@ -51,7 +51,14 @@ public class Chunk : MonoBehaviour
             width = width,
             height = height,
             location = location,
-            randomArray = randomArray
+            randomArray = randomArray,
+            surfacePerlinSettings = World.surfacePerlinSettings,
+            stonePerlinSettings = World.stonePerlinSettings,
+            ironPerlinSettings = World.ironPerlinSettings,
+            valuablesPerlinSettings = World.valuablesPerlinSettings,
+            diamondPerlinSettings = World.diamondPerlinSettings,
+            bedrockPerlinSettings = World.bedrockPerlinSettings,
+            cavePerlinSettings = World.cavePerlinSettings
         };
 
         processPerlinJobHandle = processPerlinDataJob.Schedule(totalSize, 64);
@@ -70,17 +77,9 @@ public class Chunk : MonoBehaviour
         return new Vector3(x, y, z);
     }
 
-    private static MeshUtils.BlockTypes DetermineBlockType(Vector3 blockPosition, float random)
+    private static MeshUtils.BlockTypes DetermineBlockType(Vector3 blockPosition, float random, int surfaceHeight,int stoneHeight,int ironHeight,int valuableHeight,int diamondHeight, int bedrockHeight, int digCave, float drawCutOff, float diamondProbability)
     {
-        int surfaceHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.surfacePerlinSettings.octaves, World.surfacePerlinSettings.scale, World.surfacePerlinSettings.heightScale, World.surfacePerlinSettings.heightOffset);
-        int stoneHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.stonePerlinSettings.octaves, World.stonePerlinSettings.scale, World.stonePerlinSettings.heightScale, World.stonePerlinSettings.heightOffset);
-        int ironHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.ironPerlinSettings.octaves, World.ironPerlinSettings.scale, World.ironPerlinSettings.heightScale, World.ironPerlinSettings.heightOffset);
-        int valuableHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.valuablesPerlinSettings.octaves, World.valuablesPerlinSettings.scale, World.valuablesPerlinSettings.heightScale, World.valuablesPerlinSettings.heightOffset);
-        int diamondHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.diamondPerlinSettings.octaves, World.diamondPerlinSettings.scale, World.diamondPerlinSettings.heightScale, World.diamondPerlinSettings.heightOffset);
-        int bedrockHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, World.bedrockPerlinSettings.octaves, World.bedrockPerlinSettings.scale, World.bedrockPerlinSettings.heightScale, World.bedrockPerlinSettings.heightOffset);
-        int digCave = (int)MeshUtils.FractialBrownianMotion3D(blockPosition.x, blockPosition.y, blockPosition.z, World.cavePerlinSettings.octaves, World.cavePerlinSettings.scale, World.cavePerlinSettings.heightScale, World.cavePerlinSettings.heightOffset);
-
-        if (digCave < World.cavePerlinSettings.drawCutOff && blockPosition.y > bedrockHeight)
+        if (digCave < drawCutOff && blockPosition.y > bedrockHeight)
         {
             return MeshUtils.BlockTypes.Air;
         }
@@ -152,7 +151,7 @@ public class Chunk : MonoBehaviour
         }
         else if (blockPosition.y > bedrockHeight)
         {
-            if (random < World.diamondPerlinSettings.probability)
+            if (random < diamondProbability)
             {
                 return MeshUtils.BlockTypes.Diamond;
             }
@@ -349,12 +348,28 @@ public class Chunk : MonoBehaviour
         public int height;
         public Vector3 location;
         public NativeArray<Unity.Mathematics.Random> randomArray;
+        public PerlinSettings surfacePerlinSettings;
+        public PerlinSettings stonePerlinSettings;
+        public PerlinSettings ironPerlinSettings;
+        public PerlinSettings valuablesPerlinSettings;
+        public PerlinSettings diamondPerlinSettings;
+        public PerlinSettings bedrockPerlinSettings;
+        public Perlin3DSettings cavePerlinSettings;
+
 
         public void Execute(int index)
         {
             Vector3 blockPosition = GetBlockPosition(index, width, height, location);
+            int surfaceHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, surfacePerlinSettings.octaves, surfacePerlinSettings.scale, surfacePerlinSettings.heightScale, surfacePerlinSettings.heightOffset);
+            int stoneHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, stonePerlinSettings.octaves, stonePerlinSettings.scale, stonePerlinSettings.heightScale, stonePerlinSettings.heightOffset);
+            int ironHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, ironPerlinSettings.octaves, ironPerlinSettings.scale, ironPerlinSettings.heightScale, ironPerlinSettings.heightOffset);
+            int valuableHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, valuablesPerlinSettings.octaves, valuablesPerlinSettings.scale, valuablesPerlinSettings.heightScale, valuablesPerlinSettings.heightOffset);
+            int diamondHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, diamondPerlinSettings.octaves, diamondPerlinSettings.scale, diamondPerlinSettings.heightScale, diamondPerlinSettings.heightOffset);
+            int bedrockHeight = (int)MeshUtils.FractialBrownianMotion(blockPosition.x, blockPosition.z, bedrockPerlinSettings.octaves, bedrockPerlinSettings.scale, bedrockPerlinSettings.heightScale, bedrockPerlinSettings.heightOffset);
+            int digCave = (int)MeshUtils.FractialBrownianMotion3D(blockPosition.x, blockPosition.y, blockPosition.z, cavePerlinSettings.octaves, cavePerlinSettings.scale, cavePerlinSettings.heightScale, cavePerlinSettings.heightOffset);
+
             float random = randomArray[index].NextFloat(1);
-            MeshUtils.BlockTypes blockType = DetermineBlockType(blockPosition, random);
+            MeshUtils.BlockTypes blockType = DetermineBlockType(blockPosition, random, surfaceHeight, stoneHeight, ironHeight, valuableHeight, diamondHeight, bedrockHeight, digCave, cavePerlinSettings.drawCutOff, diamondPerlinSettings.probability);
             chunkData[index] = blockType;
         }
     }
