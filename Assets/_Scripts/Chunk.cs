@@ -356,7 +356,7 @@ public class Chunk : MonoBehaviour
         }
     }
 
-    //[BurstCompile]
+    [BurstCompile]
     struct CalculateBlockTypeDataJob : IJobParallelFor
     {
         public NativeArray<MeshUtils.BlockTypes> chunkData;
