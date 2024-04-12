@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
-
     private StarterAssetsInputs _input;
     public int ActiveBlockTypeIndex;
     public int numberOfBlockTypesInHotbar;
@@ -68,19 +67,8 @@ public class Player : MonoBehaviour
             {
                 Vector3Int hitBlock = Vector3Int.RoundToInt(hit.point + (hit.normal / 2));
                 Chunk thisChunk = hit.transform.GetComponent<Chunk>();
-                int bx = (int)(hitBlock.x - thisChunk.location.x);
-                int by = (int)(hitBlock.y - thisChunk.location.y);
-                int bz = (int)(hitBlock.z - thisChunk.location.z);
 
-                int i = bx + World.ChunkDimensions.x * (by + World.ChunkDimensions.z * bz);
-
-                thisChunk.chunkData[i] = HotbarBlockTypes[ActiveBlockTypeIndex];
-
-                DestroyImmediate(thisChunk.GetComponent<MeshFilter>());
-                DestroyImmediate(thisChunk.GetComponent<MeshRenderer>());
-                DestroyImmediate(thisChunk.GetComponent<Collider>());
-
-                thisChunk.CreateChunk(thisChunk.location, false);
+                Signals.OnPlayerRightClick?.Invoke(hitBlock, thisChunk);
             }
 
         }

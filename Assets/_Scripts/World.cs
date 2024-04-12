@@ -61,7 +61,16 @@ public class World : MonoBehaviour
         diamondPerlinSettings = new PerlinSettings(diamondGraph.scale, diamondGraph.octaves, diamondGraph.heightScale, diamondGraph.heightOffset, diamondGraph.probability);
         bedrockPerlinSettings = new PerlinSettings(bedrockGraph.scale, bedrockGraph.octaves, bedrockGraph.heightScale, bedrockGraph.heightOffset, bedrockGraph.probability);
 
+        Signals.OnPlayerRightClick += UpdateChunk;
+
         StartCoroutine(BuildWorld());
+    }
+
+
+    MeshUtils.BlockTypes activeBlockType;
+    public void SetActiveBlockType(int index)
+    {
+        activeBlockType = (MeshUtils.BlockTypes)index;
     }
 
     private IEnumerator UpdateWorld()
@@ -79,8 +88,6 @@ public class World : MonoBehaviour
             yield return wait;
         }
     }
-
-    private void 
 
     private IEnumerator BuildQ()
     {
@@ -222,6 +229,74 @@ public class World : MonoBehaviour
                 chunks[position].MeshRenderer.enabled = false;
             }
         }
+    }
+
+    public void UpdateChunk(Vector3Int hitBlock, Chunk thisChunk)
+    {
+        int bx = (int)(hitBlock.x - thisChunk.location.x);
+        int by = (int)(hitBlock.y - thisChunk.location.y);
+        int bz = (int)(hitBlock.z - thisChunk.location.z);
+
+        Vector3Int neighbour;
+        if (bx == ChunkDimensions.x)
+        {
+            neighbour = new Vector3Int((int)thisChunk.location.x + ChunkDimensions.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
+            bx = 0;
+        }
+        else if (bx == -1)
+        {
+            neighbour = new Vector3Int((int)thisChunk.location.x - ChunkDimensions.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
+            bx = ChunkDimensions.x - 1;
+        }
+        else if (by == ChunkDimensions.y)
+        {
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y + ChunkDimensions.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
+            by = 0;
+        }
+        else if (by == -1)
+        {
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y - ChunkDimensions.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
+            by = ChunkDimensions.y - 1;
+        }
+        else if (bz == ChunkDimensions.z)
+        {
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z + ChunkDimensions.z);
+            thisChunk = chunks[neighbour];
+            bz = 0;
+        }
+        else if (bz == -1)
+        {
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z - ChunkDimensions.z);
+            thisChunk = chunks[neighbour];
+            bz = ChunkDimensions.z - 1;
+        }
+
+
+        int i = bx + ChunkDimensions.x * (by + ChunkDimensions.z * bz);
+
+        thisChunk.chunkData[i] = activeBlockType;
+
+        DestroyImmediate(thisChunk.GetComponent<MeshFilter>());
+        DestroyImmediate(thisChunk.GetComponent<MeshRenderer>());
+        DestroyImmediate(thisChunk.GetComponent<Collider>());
+
+        thisChunk.CreateChunk(thisChunk.location, false);
     }
 
 
