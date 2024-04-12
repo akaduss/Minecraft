@@ -10,14 +10,14 @@ public class World : MonoBehaviour
     public Vector3Int ExtraWorldDimensions = new(10, 7, 10);
     public Vector3Int ChunkDimensions = new(10, 10, 10);
     public GameObject ChunkPrefab;
-    public GameObject Player;
+    public GameObject PlayerPrefab;
     public Slider LoadingBarSlider;
     
     private int playerHeightOffset = 1;
     private int drawRadius = 3;
     private HashSet<Vector3Int> chunkPositions = new();
     private HashSet<Vector2Int> chunkColumns = new();
-    private Dictionary<Vector3Int, Chunk> chunks = new();
+    public Dictionary<Vector3Int, Chunk> chunks = new();
     private Queue<IEnumerator> chunksQueue = new();
     private Vector3Int lastBuildPosition = new();
     private WaitForSeconds wait = new(0.5f);
@@ -60,6 +60,7 @@ public class World : MonoBehaviour
         valuablesPerlinSettings = new PerlinSettings(valuablesGraph.scale, valuablesGraph.octaves, valuablesGraph.heightScale, valuablesGraph.heightOffset, valuablesGraph.probability);
         diamondPerlinSettings = new PerlinSettings(diamondGraph.scale, diamondGraph.octaves, diamondGraph.heightScale, diamondGraph.heightOffset, diamondGraph.probability);
         bedrockPerlinSettings = new PerlinSettings(bedrockGraph.scale, bedrockGraph.octaves, bedrockGraph.heightScale, bedrockGraph.heightOffset, bedrockGraph.probability);
+        Player.OnPlayerRightClick += AddBlockToChunk;
 
         StartCoroutine(BuildWorld());
     }
@@ -68,11 +69,11 @@ public class World : MonoBehaviour
     {
         while (true)
         {
-            if((lastBuildPosition - Player.transform.position).magnitude > ChunkDimensions.x)
+            if((lastBuildPosition - PlayerPrefab.transform.position).magnitude > ChunkDimensions.x)
             {
-                lastBuildPosition = Vector3Int.CeilToInt(Player.transform.position);
-                int posX = Mathf.FloorToInt(Player.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
-                int posZ = Mathf.FloorToInt(Player.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
+                lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
+                int posX = Mathf.FloorToInt(PlayerPrefab.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
+                int posZ = Mathf.FloorToInt(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
                 chunksQueue.Enqueue(BuildRecursiveWorld(posX, posZ, drawRadius));
                 chunksQueue.Enqueue(HideColumns(posX, posZ));
 
@@ -152,7 +153,7 @@ public class World : MonoBehaviour
 
         if (LoadingBarSlider.value == LoadingBarSlider.maxValue)
         {
-            Player.SetActive(true);
+            PlayerPrefab.SetActive(true);
             LoadingBarSlider.gameObject.SetActive(false);
 
         }
@@ -164,9 +165,9 @@ public class World : MonoBehaviour
 
         int ypos = (int) MeshUtils.FractialBrownianMotion(xpos,zpos, c.octaves, c.scale, c.heightScale, c.heightOffset) + playerHeightOffset;
 
-        Player.transform.position = new Vector3Int(xpos, ypos, zpos);
+        PlayerPrefab.transform.position = new Vector3Int(xpos, ypos, zpos);
 
-        lastBuildPosition = Vector3Int.CeilToInt(Player.transform.position);
+        lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
         StartCoroutine(BuildQ());
         StartCoroutine(UpdateWorld());
         StartCoroutine(BuildExtraWorld());
@@ -212,7 +213,7 @@ public class World : MonoBehaviour
         yield return null;
     }
 
-    public void HideChunkColumn(int x, int z)
+    private void HideChunkColumn(int x, int z)
     {
         for(int y = 0; y < WorldDimensions.y; y++)
         {
@@ -222,6 +223,61 @@ public class World : MonoBehaviour
                 chunks[position].MeshRenderer.enabled = false;
             }
         }
+    }
+
+    private void AddBlockToChunk(Vector3Int hitBlock, Chunk chunkToUpdate, MeshUtils.BlockTypes blockTypeToAdd)
+    {
+        int bx = hitBlock.x - chunkToUpdate.location.x;
+        int by = hitBlock.y - chunkToUpdate.location.y;
+        int bz = hitBlock.z - chunkToUpdate.location.z;
+
+        Vector3Int neighbour;
+        if (bx == ChunkDimensions.x)
+        {
+            neighbour = new Vector3Int(chunkToUpdate.location.x + ChunkDimensions.x, chunkToUpdate.location.y, chunkToUpdate.location.z);
+            chunkToUpdate = chunks[neighbour];
+            bx = 0;
+        }
+        else if (bx == -1)
+        {
+            neighbour = new Vector3Int(chunkToUpdate.location.x - ChunkDimensions.x, chunkToUpdate.location.y, chunkToUpdate.location.z);
+            chunkToUpdate = chunks[neighbour];
+            bx = ChunkDimensions.x - 1;
+        }
+        else if (by == ChunkDimensions.y)
+        {
+            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y + ChunkDimensions.y, chunkToUpdate.location.z);
+            chunkToUpdate = chunks[neighbour];
+            by = 0;
+        }
+        else if (by == -1)
+        {
+            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y - ChunkDimensions.y, chunkToUpdate.location.z);
+            chunkToUpdate = chunks[neighbour];
+            by = ChunkDimensions.y - 1;
+        }
+        else if (bz == ChunkDimensions.z)
+        {
+            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y, chunkToUpdate.location.z + ChunkDimensions.z);
+            chunkToUpdate = chunks[neighbour];
+            bz = 0;
+        }
+        else if (bz == -1)
+        {
+            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y, chunkToUpdate.location.z - ChunkDimensions.z);
+            chunkToUpdate = chunks[neighbour];
+            bz = ChunkDimensions.z - 1;
+        }
+
+        int i = bx + ChunkDimensions.x * (by + ChunkDimensions.z * bz);
+
+        chunkToUpdate.chunkData[i] = blockTypeToAdd;
+
+        DestroyImmediate(chunkToUpdate.GetComponent<MeshFilter>());
+        DestroyImmediate(chunkToUpdate.GetComponent<MeshRenderer>());
+        DestroyImmediate(chunkToUpdate.GetComponent<Collider>());
+        chunkToUpdate.CreateChunk(chunkToUpdate.location, false);
+
     }
 
 

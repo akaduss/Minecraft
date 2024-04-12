@@ -12,6 +12,9 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool leftClick;
+		public bool rightClick;
+		public float mouseScrollY;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -36,17 +39,33 @@ namespace StarterAssets
 
 		public void OnJump(InputValue value)
 		{
-			JumpInput(value.isPressed);
+			jump = value.isPressed;
 		}
 
 		public void OnSprint(InputValue value)
 		{
 			SprintInput(value.isPressed);
 		}
+
+		public void OnLeftClick(InputValue value)
+		{
+			leftClick = value.isPressed;
+		}
+
+		public void OnRightClick(InputValue value)
+		{
+			rightClick = value.isPressed;
+        }
+
+        public void OnMouseScroll(InputValue value)
+        {
+            mouseScrollY = value.Get<float>();
+        }
+
 #endif
 
 
-		public void MoveInput(Vector2 newMoveDirection)
+        public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 

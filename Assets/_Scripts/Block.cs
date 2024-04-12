@@ -7,7 +7,7 @@ public class Block
     public Mesh mesh;
     private readonly Chunk parentChunk;
 
-    public Block(Vector3 offset, BlockTypes blockType, Chunk chunk)
+    public Block(Vector3 offset, BlockTypes blockType, Chunk chunk, BlockTypes crackType)
     {
         parentChunk = chunk;
         offset -= chunk.location;
@@ -21,41 +21,41 @@ public class Block
         {
             if (blockType == BlockTypes.GrassSide)
             {
-                quads.Add(new(BlockSide.Bottom, offset, BlockTypes.Dirt));
+                quads.Add(new(BlockSide.Bottom, offset, BlockTypes.Dirt, crackType));
             }
             else
             {
-                quads.Add(new(BlockSide.Bottom, offset, blockType));
+                quads.Add(new(BlockSide.Bottom, offset, blockType, crackType));
             }
         }
         if (HasSolidNeighbour((int)offset.x, (int)offset.y + 1, (int)offset.z ) == false)
         {
             if(blockType == BlockTypes.GrassSide)
             {
-                quads.Add(new(BlockSide.Top, offset, BlockTypes.GrassTop));
+                quads.Add(new(BlockSide.Top, offset, BlockTypes.GrassTop, crackType));
             }
             else
             {
-                quads.Add(new(BlockSide.Top, offset, blockType));
+                quads.Add(new(BlockSide.Top, offset, blockType, crackType));
             }
         }
 
         if (HasSolidNeighbour((int)offset.x - 1, (int)offset.y, (int)offset.z ) == false)
         {
-            quads.Add(new(BlockSide.Left, offset, blockType));
+            quads.Add(new(BlockSide.Left, offset, blockType, crackType));
         }
         if (HasSolidNeighbour((int)offset.x + 1, (int)offset.y, (int)offset.z ) == false)
         {
-            quads.Add(new(BlockSide.Right, offset, blockType));
+            quads.Add(new(BlockSide.Right, offset, blockType, crackType));
         }
 
         if (HasSolidNeighbour((int)offset.x, (int)offset.y, (int)offset.z + 1 ) == false)
         {
-            quads.Add(new(BlockSide.Front, offset, blockType));
+            quads.Add(new(BlockSide.Front, offset, blockType, crackType));
         }
         if (HasSolidNeighbour((int)offset.x, (int)offset.y, (int)offset.z - 1 ) == false)
         {
-            quads.Add(new(BlockSide.Back, offset, blockType));
+            quads.Add(new(BlockSide.Back, offset, blockType, crackType));
         }
 
         if (quads.Count == 0) return;

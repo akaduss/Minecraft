@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Quad
 {
     public Mesh mesh;
 
-    public Quad(MeshUtils.BlockSide blockSide, Vector3 offset, MeshUtils.BlockTypes blockType)
+    public Quad(MeshUtils.BlockSide blockSide, Vector3 offset, MeshUtils.BlockTypes blockType, MeshUtils.BlockTypes crackType)
     {
         float vs = 0.5f; //(voxel size)
 
@@ -20,6 +21,15 @@ public class Quad
 
 
         Vector2[] uvs = new Vector2[] { uv00, uv01, uv11, uv10 }; //1,01,0,10
+
+        List<Vector2> secondaryUVs = new()
+        {
+            MeshUtils.BlockUVs[(int)crackType, 3],
+            MeshUtils.BlockUVs[(int)crackType, 2],
+            MeshUtils.BlockUVs[(int)crackType, 0],
+            MeshUtils.BlockUVs[(int)crackType, 1],
+        };
+
 
         Vector3 p0 = new(-vs, -vs, vs);
         Vector3 p1 = new(-vs, vs, vs);
@@ -73,6 +83,8 @@ public class Quad
             uv = uvs,
             triangles = triangles
         };
+
+        mesh.SetUVs(1, secondaryUVs);
 
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
