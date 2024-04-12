@@ -23,6 +23,14 @@ public class Block
             {
                 quads.Add(new(BlockSide.Bottom, offset, BlockTypes.Dirt));
             }
+            else if(blockType == BlockTypes.Wood)
+            {
+                quads.Add(new(BlockSide.Bottom, offset, BlockTypes.WoodTop));
+            }
+            else if(blockType == BlockTypes.CraftingTop)
+            {
+                quads.Add(new(BlockSide.Bottom, offset, BlockTypes.Plank));
+            }
             else
             {
                 quads.Add(new(BlockSide.Bottom, offset, blockType));
@@ -34,6 +42,14 @@ public class Block
             {
                 quads.Add(new(BlockSide.Top, offset, BlockTypes.GrassTop));
             }
+            else if(blockType == BlockTypes.Wood)
+            {
+                quads.Add(new(BlockSide.Top, offset, BlockTypes.WoodTop));
+            }
+            else if (blockType == BlockTypes.CraftingTop)
+            {
+                quads.Add(new(BlockSide.Top, offset, BlockTypes.CraftingTop));
+            }
             else
             {
                 quads.Add(new(BlockSide.Top, offset, blockType));
@@ -42,20 +58,48 @@ public class Block
 
         if (HasSolidNeighbour((int)offset.x - 1, (int)offset.y, (int)offset.z ) == false)
         {
-            quads.Add(new(BlockSide.Left, offset, blockType));
+            if (blockType == BlockTypes.CraftingTop)
+            {
+                quads.Add(new(BlockSide.Left, offset, BlockTypes.CraftingLeftRight));
+            }
+            else
+            {
+                quads.Add(new(BlockSide.Left, offset, blockType));
+            }
         }
         if (HasSolidNeighbour((int)offset.x + 1, (int)offset.y, (int)offset.z ) == false)
         {
-            quads.Add(new(BlockSide.Right, offset, blockType));
+            if (blockType == BlockTypes.CraftingTop)
+            {
+                quads.Add(new(BlockSide.Right, offset, BlockTypes.CraftingLeftRight));
+            }
+            else
+            {
+                quads.Add(new(BlockSide.Right, offset, blockType));
+            }
         }
 
         if (HasSolidNeighbour((int)offset.x, (int)offset.y, (int)offset.z + 1 ) == false)
         {
-            quads.Add(new(BlockSide.Front, offset, blockType));
+            if (blockType == BlockTypes.CraftingTop)
+            {
+                quads.Add(new(BlockSide.Front, offset, BlockTypes.CraftingFrontBack));
+            }
+            else
+            {
+                quads.Add(new(BlockSide.Front, offset, blockType));
+            }
         }
         if (HasSolidNeighbour((int)offset.x, (int)offset.y, (int)offset.z - 1 ) == false)
         {
-            quads.Add(new(BlockSide.Back, offset, blockType));
+            if (blockType == BlockTypes.CraftingTop)
+            {
+                quads.Add(new(BlockSide.Back, offset, BlockTypes.CraftingFrontBack));
+            }
+            else
+            {
+                quads.Add(new(BlockSide.Back, offset, blockType));
+            }
         }
 
         if (quads.Count == 0) return;

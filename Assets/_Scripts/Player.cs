@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
 {
     private StarterAssetsInputs _input;
     public int ActiveBlockTypeIndex;
-    public int numberOfBlockTypesInHotbar;
+    private int numberOfBlockTypesInHotbar;
     public MeshUtils.BlockTypes[] HotbarBlockTypes;
 
     private void Awake()

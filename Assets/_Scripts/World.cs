@@ -61,13 +61,14 @@ public class World : MonoBehaviour
         diamondPerlinSettings = new PerlinSettings(diamondGraph.scale, diamondGraph.octaves, diamondGraph.heightScale, diamondGraph.heightOffset, diamondGraph.probability);
         bedrockPerlinSettings = new PerlinSettings(bedrockGraph.scale, bedrockGraph.octaves, bedrockGraph.heightScale, bedrockGraph.heightOffset, bedrockGraph.probability);
 
+        Signals.OnActiveBlockTypeChanged += SetActiveBlockType;
         Signals.OnPlayerRightClick += UpdateChunk;
 
         StartCoroutine(BuildWorld());
     }
 
 
-    MeshUtils.BlockTypes activeBlockType;
+    MeshUtils.BlockTypes activeBlockType = MeshUtils.BlockTypes.GrassSide;
     public void SetActiveBlockType(int index)
     {
         activeBlockType = (MeshUtils.BlockTypes)index;

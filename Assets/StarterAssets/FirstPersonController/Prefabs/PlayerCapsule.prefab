@@ -159,7 +159,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8997996947095583982
 Transform:
   m_ObjectHideFlags: 0
@@ -383,5 +383,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ActiveBlockTypeIndex: 0
-  numberOfBlockTypesInHotbar: 3
-  HotbarBlockTypes: 040000000f00000002000000030000000e000000100000001100000000000000130000001200000014000000
+  numberOfBlockTypesInHotbar: 12
+  HotbarBlockTypes: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a00000013000000

@@ -7,7 +7,7 @@ public static class MeshUtils
 {
     public enum BlockTypes
     {
-        GrassTop, GrassSide, Dirt, Stone, Water, Coal, Iron, Gold, Diamond, Redstone, Lapis, Bedrock, Cobblestone, Wood, Plank, Crafting, Furnace, Glass, Brick, Obsidian, Air, None, Crack1, Crack2, Crack3, Crack4, Crack5, Crack6, Crack7, Crack8, Crack9, Crack10
+        Stone, Cobblestone, GrassSide, Dirt, Brick, Glass, Gravel, Sand, Plank, Wood, Obsidian, CraftingTop, Water, Coal, Iron, Gold, Diamond, Redstone, Lapis, Bedrock, Furnace, GrassTop, WoodTop, CraftingFrontBack, CraftingLeftRight, Air, None, Crack1, Crack2, Crack3, Crack4, Crack5, Crack6, Crack7, Crack8, Crack9, Crack10
     }
 
     public static int[] blockTypeHealths = { 2, 2, 1, 3, 1, 4, 6, 6, 7, 5, 5, -1, 2, 3, 2, 2, 2, 1, 3, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -17,10 +17,14 @@ public static class MeshUtils
         Bottom, Left, Right, Top, Front, Back
     }
 
-    private static UvCoordinates grassTopUVcoords = Utils.CalculateAtlasPosition(10, 11);
-    private static UvCoordinates grassSideUVcoords = Utils.CalculateAtlasPosition(0, 3);
-    private static UvCoordinates dirtUVcoords = Utils.CalculateAtlasPosition(0, 2);
     private static UvCoordinates stoneUVCoords = Utils.CalculateAtlasPosition(0, 1);
+    private static UvCoordinates cobblestoneUVCoords = Utils.CalculateAtlasPosition(1, 0);
+    private static UvCoordinates grassSideUVCoords = Utils.CalculateAtlasPosition(0, 3);
+    private static UvCoordinates dirtUVCoords = Utils.CalculateAtlasPosition(0, 2);
+    private static UvCoordinates brickUVCoords = Utils.CalculateAtlasPosition(0, 7);
+    private static UvCoordinates glassUVCoords = Utils.CalculateAtlasPosition(3, 1);
+    private static UvCoordinates gravelUVCoords = Utils.CalculateAtlasPosition(1, 3);
+    private static UvCoordinates sandUVCoords = Utils.CalculateAtlasPosition(1, 2);
     private static UvCoordinates waterUVCoords = Utils.CalculateAtlasPosition(0, 15);
     private static UvCoordinates coalUVCoords = Utils.CalculateAtlasPosition(2, 2);
     private static UvCoordinates ironUVCoords = Utils.CalculateAtlasPosition(2, 1);
@@ -29,14 +33,15 @@ public static class MeshUtils
     private static UvCoordinates redstoneUVCoords = Utils.CalculateAtlasPosition(3, 3);
     private static UvCoordinates lapisUVCoords = Utils.CalculateAtlasPosition(10, 0);
     private static UvCoordinates bedrockUVCoords = Utils.CalculateAtlasPosition(1, 1);
-    private static UvCoordinates cobblestoneUVCoords = Utils.CalculateAtlasPosition(1, 0);
-    private static UvCoordinates woodUVCoords = Utils.CalculateAtlasPosition(1, 5);
+    private static UvCoordinates woodUVCoords = Utils.CalculateAtlasPosition(1, 4);
     private static UvCoordinates plankUVCoords = Utils.CalculateAtlasPosition(0, 4);
-    private static UvCoordinates craftingUVCoords = Utils.CalculateAtlasPosition(3, 11);
+    private static UvCoordinates craftingTopUVCoords = Utils.CalculateAtlasPosition(2, 11);
     private static UvCoordinates furnaceUVCoords = Utils.CalculateAtlasPosition(3, 12);
-    private static UvCoordinates glassUVCoords = Utils.CalculateAtlasPosition(3, 1);
-    private static UvCoordinates brickUVCoords = Utils.CalculateAtlasPosition(0, 7);
     private static UvCoordinates obsidianUVCoords = Utils.CalculateAtlasPosition(2, 5);
+    private static UvCoordinates grassTopUVCoords = Utils.CalculateAtlasPosition(10, 11);
+    private static UvCoordinates woodTopUVCoords = Utils.CalculateAtlasPosition(1, 5);
+    private static UvCoordinates craftingFrontBackUVCoords = Utils.CalculateAtlasPosition(3,11);
+    private static UvCoordinates craftingLeftRightUVCoords = Utils.CalculateAtlasPosition(3,12);
 
     private static UvCoordinates crack1UVCoords = Utils.CalculateAtlasPosition(15, 0);
     private static UvCoordinates crack2UVCoords = Utils.CalculateAtlasPosition(15, 1);
@@ -53,28 +58,33 @@ public static class MeshUtils
 
     public static Vector2[,] BlockUVs =
     {
-        { grassTopUVcoords.uvBottomLeft,grassTopUVcoords.uvBottomRight,grassTopUVcoords.uvTopLeft,grassTopUVcoords.uvTopRight },
-        { grassSideUVcoords.uvBottomLeft,grassSideUVcoords.uvBottomRight,grassSideUVcoords.uvTopLeft,grassSideUVcoords.uvTopRight },
-        { dirtUVcoords.uvBottomLeft,dirtUVcoords.uvBottomRight,dirtUVcoords.uvTopLeft,dirtUVcoords.uvTopRight },
         { stoneUVCoords.uvBottomLeft,stoneUVCoords.uvBottomRight,stoneUVCoords.uvTopLeft,stoneUVCoords.uvTopRight },
+        { cobblestoneUVCoords.uvBottomLeft, cobblestoneUVCoords.uvBottomRight, cobblestoneUVCoords.uvTopLeft, cobblestoneUVCoords.uvTopRight },
+        { grassSideUVCoords.uvBottomLeft,grassSideUVCoords.uvBottomRight,grassSideUVCoords.uvTopLeft,grassSideUVCoords.uvTopRight },
+        { dirtUVCoords.uvBottomLeft,dirtUVCoords.uvBottomRight,dirtUVCoords.uvTopLeft,dirtUVCoords.uvTopRight },
+        { brickUVCoords.uvBottomLeft, brickUVCoords.uvBottomRight, brickUVCoords.uvTopLeft, brickUVCoords.uvTopRight },
+        { glassUVCoords.uvBottomLeft, glassUVCoords.uvBottomRight, glassUVCoords.uvTopLeft, glassUVCoords.uvTopRight },
+        { gravelUVCoords.uvBottomLeft, gravelUVCoords.uvBottomRight, gravelUVCoords.uvTopLeft, gravelUVCoords.uvTopRight },
+        { sandUVCoords.uvBottomLeft, sandUVCoords.uvBottomRight, sandUVCoords.uvTopLeft, sandUVCoords.uvTopRight },
+        { plankUVCoords.uvBottomLeft, plankUVCoords.uvBottomRight, plankUVCoords.uvTopLeft, plankUVCoords.uvTopRight },
+        { woodUVCoords.uvBottomLeft, woodUVCoords.uvBottomRight, woodUVCoords.uvTopLeft, woodUVCoords.uvTopRight },
+        { obsidianUVCoords.uvBottomLeft, obsidianUVCoords.uvBottomRight, obsidianUVCoords.uvTopLeft, obsidianUVCoords.uvTopRight },
+        { craftingTopUVCoords.uvBottomLeft, craftingTopUVCoords.uvBottomRight, craftingTopUVCoords.uvTopLeft, craftingTopUVCoords.uvTopRight }, //Crafting
         { waterUVCoords.uvBottomLeft, waterUVCoords.uvBottomRight, waterUVCoords.uvTopLeft, waterUVCoords.uvTopRight },
         { coalUVCoords.uvBottomLeft, coalUVCoords.uvBottomRight, coalUVCoords.uvTopLeft, coalUVCoords.uvTopRight },
         { ironUVCoords.uvBottomLeft, ironUVCoords.uvBottomRight, ironUVCoords.uvTopLeft, ironUVCoords.uvTopRight },
         { goldUVCoords.uvBottomLeft, goldUVCoords.uvBottomRight, goldUVCoords.uvTopLeft, goldUVCoords.uvTopRight },
         { diamondUVCoords.uvBottomLeft, diamondUVCoords.uvBottomRight, diamondUVCoords.uvTopLeft, diamondUVCoords.uvTopRight },
         { redstoneUVCoords.uvBottomLeft, redstoneUVCoords.uvBottomRight, redstoneUVCoords.uvTopLeft, redstoneUVCoords.uvTopRight },
-        { lapisUVCoords.uvBottomLeft, lapisUVCoords.uvBottomRight, lapisUVCoords.uvTopLeft, lapisUVCoords.uvTopRight },
-        { bedrockUVCoords.uvBottomLeft, bedrockUVCoords.uvBottomRight, bedrockUVCoords.uvTopLeft, bedrockUVCoords.uvTopRight },
-        { cobblestoneUVCoords.uvBottomLeft, cobblestoneUVCoords.uvBottomRight, cobblestoneUVCoords.uvTopLeft, cobblestoneUVCoords.uvTopRight },
-        { woodUVCoords.uvBottomLeft, woodUVCoords.uvBottomRight, woodUVCoords.uvTopLeft, woodUVCoords.uvTopRight },
-        { plankUVCoords.uvBottomLeft, plankUVCoords.uvBottomRight, plankUVCoords.uvTopLeft, plankUVCoords.uvTopRight },
-        { craftingUVCoords.uvBottomLeft, craftingUVCoords.uvBottomRight, craftingUVCoords.uvTopLeft, craftingUVCoords.uvTopRight },
-        { furnaceUVCoords.uvBottomLeft, furnaceUVCoords.uvBottomRight, furnaceUVCoords.uvTopLeft, furnaceUVCoords.uvTopRight },
-        { glassUVCoords.uvBottomLeft, glassUVCoords.uvBottomRight, glassUVCoords.uvTopLeft, glassUVCoords.uvTopRight },
-        { brickUVCoords.uvBottomLeft, brickUVCoords.uvBottomRight, brickUVCoords.uvTopLeft, brickUVCoords.uvTopRight },
-        { obsidianUVCoords.uvBottomLeft, obsidianUVCoords.uvBottomRight, obsidianUVCoords.uvTopLeft, obsidianUVCoords.uvTopRight },
-        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero },
-        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero },
+        { lapisUVCoords.uvBottomLeft, lapisUVCoords.uvBottomRight, lapisUVCoords.uvTopLeft, lapisUVCoords.uvTopRight }, //Lapis
+        { bedrockUVCoords.uvBottomLeft, bedrockUVCoords.uvBottomRight, bedrockUVCoords.uvTopLeft, bedrockUVCoords.uvTopRight }, //Bedrock
+        { furnaceUVCoords.uvBottomLeft, furnaceUVCoords.uvBottomRight, furnaceUVCoords.uvTopLeft, furnaceUVCoords.uvTopRight }, //Furnace
+        { grassTopUVCoords.uvBottomLeft,grassTopUVCoords.uvBottomRight,grassTopUVCoords.uvTopLeft,grassTopUVCoords.uvTopRight }, //GrassTop
+        { woodTopUVCoords.uvBottomLeft, woodTopUVCoords.uvBottomRight, woodTopUVCoords.uvTopLeft, woodTopUVCoords.uvTopRight }, //WoodTop
+        { craftingFrontBackUVCoords.uvBottomLeft, craftingFrontBackUVCoords.uvBottomRight, craftingFrontBackUVCoords.uvTopLeft, craftingFrontBackUVCoords.uvTopRight }, //CraftingFrontBack
+        { craftingLeftRightUVCoords.uvBottomLeft, craftingLeftRightUVCoords.uvBottomRight, craftingLeftRightUVCoords.uvTopLeft, craftingLeftRightUVCoords.uvTopRight}, //CraftingLeftRight
+        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero }, //Air
+        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero }, //None
         // Crack UVs
         { crack1UVCoords.uvBottomLeft, crack1UVCoords.uvBottomRight, crack1UVCoords.uvTopLeft, crack1UVCoords.uvTopRight},
         { crack2UVCoords.uvBottomLeft, crack2UVCoords.uvBottomRight, crack2UVCoords.uvTopLeft, crack2UVCoords.uvTopRight },
