@@ -134,8 +134,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.4
+  m_Height: 1.6
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8616685848737228372
@@ -152,13 +152,14 @@ GameObject:
   - component: {fileID: 1978471637655604388}
   - component: {fileID: 5420857361349278248}
   - component: {fileID: 8616685848737228376}
+  - component: {fileID: 8188887937678038954}
   m_Layer: 8
   m_Name: PlayerCapsule
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8997996947095583982
 Transform:
   m_ObjectHideFlags: 0
@@ -195,13 +196,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 1.6
+  m_Radius: 0.4
   m_SlopeLimit: 45
   m_StepOffset: 1
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0.93, z: 0}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &8616685848737228371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +265,9 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
+  leftClick: 0
+  rightClick: 0
+  mouseScrollY: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -366,3 +370,18 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &8188887937678038954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8616685848737228372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 612d3f61cf670024e9cd3eb232f13b2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActiveBlockTypeIndex: 0
+  numberOfBlockTypesInHotbar: 3
+  HotbarBlockTypes: 040000000f00000002000000030000000e000000100000001100000000000000130000001200000014000000

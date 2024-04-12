@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
-    public Vector3Int WorldDimensions = new(20, 7, 20);
-    public Vector3Int ExtraWorldDimensions = new(10, 7, 10);
-    public Vector3Int ChunkDimensions = new(10, 10, 10);
+    public static Vector3Int WorldDimensions = new(3, 9, 3);
+    public static Vector3Int ExtraWorldDimensions = new(1, 9, 1);
+    public static Vector3Int ChunkDimensions = new(10, 10, 10);
     public GameObject ChunkPrefab;
-    public GameObject Player;
+    public GameObject PlayerPrefab;
     public Slider LoadingBarSlider;
     
     private int playerHeightOffset = 1;
@@ -68,11 +68,11 @@ public class World : MonoBehaviour
     {
         while (true)
         {
-            if((lastBuildPosition - Player.transform.position).magnitude > ChunkDimensions.x)
+            if((lastBuildPosition - PlayerPrefab.transform.position).magnitude > ChunkDimensions.x)
             {
-                lastBuildPosition = Vector3Int.CeilToInt(Player.transform.position);
-                int posX = Mathf.FloorToInt(Player.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
-                int posZ = Mathf.FloorToInt(Player.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
+                lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
+                int posX = Mathf.FloorToInt(PlayerPrefab.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
+                int posZ = Mathf.FloorToInt(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
                 chunksQueue.Enqueue(BuildRecursiveWorld(posX, posZ, drawRadius));
                 chunksQueue.Enqueue(HideColumns(posX, posZ));
 
@@ -152,7 +152,7 @@ public class World : MonoBehaviour
 
         if (LoadingBarSlider.value == LoadingBarSlider.maxValue)
         {
-            Player.SetActive(true);
+            PlayerPrefab.SetActive(true);
             LoadingBarSlider.gameObject.SetActive(false);
 
         }
@@ -164,11 +164,11 @@ public class World : MonoBehaviour
 
         int ypos = (int) MeshUtils.FractialBrownianMotion(xpos,zpos, c.octaves, c.scale, c.heightScale, c.heightOffset) + playerHeightOffset;
 
-        Player.transform.position = new Vector3Int(xpos, ypos, zpos);
+        PlayerPrefab.transform.position = new Vector3Int(xpos, ypos, zpos);
 
-        lastBuildPosition = Vector3Int.CeilToInt(Player.transform.position);
+        lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
         StartCoroutine(BuildQ());
-        StartCoroutine(UpdateWorld());
+        //StartCoroutine(UpdateWorld());
         StartCoroutine(BuildExtraWorld());
     }
 
@@ -197,7 +197,6 @@ public class World : MonoBehaviour
             }
         }
     }
-
 
     private IEnumerator HideColumns(int x, int z)
     {

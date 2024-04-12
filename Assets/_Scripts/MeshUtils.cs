@@ -7,7 +7,7 @@ public static class MeshUtils
 {
     public enum BlockTypes
     {
-        Sand, GrassTop, GrassSide, Dirt, Stone, Water, Air, Coal, Iron, Gold, Diamond, Redstone, Lapis, Bedrock
+        Sand, GrassTop, GrassSide, Dirt, Stone, Water, Air, Coal, Iron, Gold, Diamond, Redstone, Lapis, Bedrock, Brick, Cobblestone, Glass, Gravel, Log, Plank, Obsidian
     }
 
     public enum BlockSide
@@ -29,6 +29,14 @@ public static class MeshUtils
     private static UvCoordinates redstoneUVCoords = Utils.CalculateAtlasPosition(3, 3);
     private static UvCoordinates lapisUVCoords = Utils.CalculateAtlasPosition(10, 0);
     private static UvCoordinates bedrockUVCoords = Utils.CalculateAtlasPosition(1, 1);
+    private static UvCoordinates brickUVCoords = Utils.CalculateAtlasPosition(0,7);
+    private static UvCoordinates cobblestoneUVCoords = Utils.CalculateAtlasPosition(1,0);
+    private static UvCoordinates glassUVCoords = Utils.CalculateAtlasPosition(3,1);
+    private static UvCoordinates gravelUVCoords = Utils.CalculateAtlasPosition(1,3);
+    private static UvCoordinates logUVCoords = Utils.CalculateAtlasPosition(1,4);
+    private static UvCoordinates plankUVCoords = Utils.CalculateAtlasPosition(0,4);
+    private static UvCoordinates obsidianUVCoords = Utils.CalculateAtlasPosition(2,5);
+
 
 
     public static Vector2[,] BlockUVs =
@@ -46,7 +54,14 @@ public static class MeshUtils
         { diamondUVCoords.uvBottomLeft, diamondUVCoords.uvBottomRight, diamondUVCoords.uvTopLeft, diamondUVCoords.uvTopRight },
         { redstoneUVCoords.uvBottomLeft, redstoneUVCoords.uvBottomRight, redstoneUVCoords.uvTopLeft, redstoneUVCoords.uvTopRight },
         { lapisUVCoords.uvBottomLeft, lapisUVCoords.uvBottomRight, lapisUVCoords.uvTopLeft, lapisUVCoords.uvTopRight },
-        { bedrockUVCoords.uvBottomLeft, bedrockUVCoords.uvBottomRight, bedrockUVCoords.uvTopLeft, bedrockUVCoords.uvTopRight }
+        { bedrockUVCoords.uvBottomLeft, bedrockUVCoords.uvBottomRight, bedrockUVCoords.uvTopLeft, bedrockUVCoords.uvTopRight },
+        { brickUVCoords.uvBottomLeft, brickUVCoords.uvBottomRight, brickUVCoords.uvTopLeft, brickUVCoords.uvTopRight },
+        { cobblestoneUVCoords.uvBottomLeft, cobblestoneUVCoords.uvBottomRight, cobblestoneUVCoords.uvTopLeft, cobblestoneUVCoords.uvTopRight },
+        { glassUVCoords.uvBottomLeft, glassUVCoords.uvBottomRight, glassUVCoords.uvTopLeft, glassUVCoords.uvTopRight },
+        { gravelUVCoords.uvBottomLeft, gravelUVCoords.uvBottomRight, gravelUVCoords.uvTopLeft, gravelUVCoords.uvTopRight },
+        { logUVCoords.uvBottomLeft, logUVCoords.uvBottomRight, logUVCoords.uvTopLeft, logUVCoords.uvTopRight },
+        { plankUVCoords.uvBottomLeft, plankUVCoords.uvBottomRight, plankUVCoords.uvTopLeft, plankUVCoords.uvTopRight },
+        { obsidianUVCoords.uvBottomLeft, obsidianUVCoords.uvBottomRight, obsidianUVCoords.uvTopLeft, obsidianUVCoords.uvTopRight }
     };
 
     public static Mesh MergeMeshes(Mesh[] meshesArray)

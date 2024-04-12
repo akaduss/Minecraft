@@ -185,7 +185,7 @@ public class Chunk : MonoBehaviour
             return MeshUtils.BlockTypes.Bedrock;
         }
     }
-    public void CreateChunk(Vector3 position)
+    public void CreateChunk(Vector3 position, bool rebuildBlocks = true)
     {
         location = position;
 
@@ -194,7 +194,10 @@ public class Chunk : MonoBehaviour
         mr.material = blockAtlas;
         MeshRenderer = mr;
         blocks = new Block[width, height, depth];
-        BuildChunkData();
+        if (rebuildBlocks)
+        {
+            BuildChunkData();
+        }
 
         List<Mesh> inputMeshes = new();
         int triangleStart = 0;
