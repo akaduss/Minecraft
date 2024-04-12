@@ -53,13 +53,11 @@ public static class MeshUtils
 
     public static Vector2[,] BlockUVs =
     {
-        //{ sandUVcoords.uvBottomLeft,sandUVcoords.uvBottomRight,sandUVcoords.uvTopLeft,sandUVcoords.uvTopRight },
         { grassTopUVcoords.uvBottomLeft,grassTopUVcoords.uvBottomRight,grassTopUVcoords.uvTopLeft,grassTopUVcoords.uvTopRight },
         { grassSideUVcoords.uvBottomLeft,grassSideUVcoords.uvBottomRight,grassSideUVcoords.uvTopLeft,grassSideUVcoords.uvTopRight },
         { dirtUVcoords.uvBottomLeft,dirtUVcoords.uvBottomRight,dirtUVcoords.uvTopLeft,dirtUVcoords.uvTopRight },
         { stoneUVCoords.uvBottomLeft,stoneUVCoords.uvBottomRight,stoneUVCoords.uvTopLeft,stoneUVCoords.uvTopRight },
         { waterUVCoords.uvBottomLeft, waterUVCoords.uvBottomRight, waterUVCoords.uvTopLeft, waterUVCoords.uvTopRight },
-        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero },
         { coalUVCoords.uvBottomLeft, coalUVCoords.uvBottomRight, coalUVCoords.uvTopLeft, coalUVCoords.uvTopRight },
         { ironUVCoords.uvBottomLeft, ironUVCoords.uvBottomRight, ironUVCoords.uvTopLeft, ironUVCoords.uvTopRight },
         { goldUVCoords.uvBottomLeft, goldUVCoords.uvBottomRight, goldUVCoords.uvTopLeft, goldUVCoords.uvTopRight },
@@ -75,7 +73,8 @@ public static class MeshUtils
         { glassUVCoords.uvBottomLeft, glassUVCoords.uvBottomRight, glassUVCoords.uvTopLeft, glassUVCoords.uvTopRight },
         { brickUVCoords.uvBottomLeft, brickUVCoords.uvBottomRight, brickUVCoords.uvTopLeft, brickUVCoords.uvTopRight },
         { obsidianUVCoords.uvBottomLeft, obsidianUVCoords.uvBottomRight, obsidianUVCoords.uvTopLeft, obsidianUVCoords.uvTopRight },
-
+        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero },
+        { Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero },
         // Crack UVs
         { crack1UVCoords.uvBottomLeft, crack1UVCoords.uvBottomRight, crack1UVCoords.uvTopLeft, crack1UVCoords.uvTopRight},
         { crack2UVCoords.uvBottomLeft, crack2UVCoords.uvBottomRight, crack2UVCoords.uvTopLeft, crack2UVCoords.uvTopRight },
@@ -87,7 +86,6 @@ public static class MeshUtils
         { crack8UVCoords.uvBottomLeft, crack8UVCoords.uvBottomRight, crack8UVCoords.uvTopLeft, crack8UVCoords.uvTopRight },
         { crack9UVCoords.uvBottomLeft, crack9UVCoords.uvBottomRight, crack9UVCoords.uvTopLeft, crack9UVCoords.uvTopRight },
         { crack10UVCoords.uvBottomLeft, crack10UVCoords.uvBottomRight, crack10UVCoords.uvTopLeft, crack10UVCoords.uvTopRight }
-
     };
 
     public static Mesh MergeMeshes(Mesh[] meshesArray)

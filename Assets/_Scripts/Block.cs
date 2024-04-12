@@ -7,7 +7,7 @@ public class Block
     public Mesh mesh;
     private readonly Chunk parentChunk;
 
-    public Block(Vector3 offset, BlockTypes blockType, Chunk chunk, BlockTypes crackType)
+    public Block(Vector3 offset, BlockTypes blockType, Chunk chunk, BlockTypes crackType = BlockTypes.Crack1)
     {
         parentChunk = chunk;
         offset -= chunk.location;

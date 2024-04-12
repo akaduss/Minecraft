@@ -168,7 +168,7 @@ public class World : MonoBehaviour
 
         lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
         StartCoroutine(BuildQ());
-        //StartCoroutine(UpdateWorld());
+        StartCoroutine(UpdateWorld());
         StartCoroutine(BuildExtraWorld());
     }
 

@@ -47,7 +47,6 @@ public class Chunk : MonoBehaviour
             randomArray[i] = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, int.MaxValue));
         }
 
-
         processBlockTypeDataJob = new()
         {
             chunkData = chunkDataNative,
@@ -222,7 +221,7 @@ public class Chunk : MonoBehaviour
             {
                 for (int x = 0; x < width; x++)
                 {
-                    blocks[x,y,z] = new(new Vector3(x, y, z) + location, chunkData[x + width * (y + depth * z) ], this, crackData[x + width * (y + depth * z)]);
+                    blocks[x, y, z] = new(new Vector3(x, y, z) + location, chunkData[x + width * (y + depth * z)], this, crackData[x + width * (y + depth * z)]);
                     if (blocks[x, y, z].mesh == null) continue;
 
                     inputMeshes.Add(blocks[x, y, z].mesh);
@@ -279,7 +278,7 @@ public class Chunk : MonoBehaviour
 
         newMesh.RecalculateBounds();
         mf.mesh = newMesh;
-        MeshCollider collider = gameObject.AddComponent<MeshCollider>();
+        var collider = gameObject.AddComponent<MeshCollider>();
         collider.sharedMesh = mf.mesh;
     }
 
