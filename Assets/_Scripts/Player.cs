@@ -6,14 +6,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
-    public static Action<int> OnActiveBlockTypeChanged;
-    public static Action<Vector3Int, Chunk, MeshUtils.BlockTypes> OnPlayerRightClick;
-
     private StarterAssetsInputs _input;
     public int ActiveBlockTypeIndex;
-    public int numberOfBlockTypesInHotbar;
+    private int numberOfBlockTypesInHotbar;
     public MeshUtils.BlockTypes[] HotbarBlockTypes;
-    public MeshUtils.BlockTypes ActiveBlockType;
 
     private void Awake()
     {
@@ -23,9 +19,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         ActiveBlockTypeIndex = 0;
-        ActiveBlockType = HotbarBlockTypes[ActiveBlockTypeIndex];
         _input = GetComponent<StarterAssetsInputs>();
-        OnActiveBlockTypeChanged?.Invoke(ActiveBlockTypeIndex);
+        Signals.OnActiveBlockTypeChanged?.Invoke(ActiveBlockTypeIndex);
     }
 
     private void Update()
@@ -37,30 +32,26 @@ public class Player : MonoBehaviour
 
     private void LeftClick()
     {
-        if(_input.leftClick)
+        if (_input.leftClick )
         {
             _input.leftClick = false;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, 10))
             {
                 Vector3Int hitBlock = Vector3Int.RoundToInt(hit.point - (hit.normal / 2));
-                Chunk hitChunk = hit.transform.GetComponent<Chunk>();
-                int bx = hitBlock.x - hitChunk.location.x;
-                int by = hitBlock.y - hitChunk.location.y;
-                int bz = hitBlock.z - hitChunk.location.z;
-                int i = bx + hitChunk.width * (by + hitChunk.depth * bz);
+                Chunk thisChunk = hit.transform.GetComponent<Chunk>();
+                int bx = (int)(hitBlock.x - thisChunk.location.x);
+                int by = (int)(hitBlock.y - thisChunk.location.y);
+                int bz = (int)(hitBlock.z - thisChunk.location.z);
+                int i = bx + World.ChunkDimensions.x * (by + World.ChunkDimensions.z * bz);
 
-                hitChunk.crackData[i]++;
-                if (hitChunk.crackData[i] == MeshUtils.BlockTypes.None + MeshUtils.blockTypeHealths[(int)hitChunk.chunkData[i]])
-                {
-                    hitChunk.chunkData[i] = MeshUtils.BlockTypes.Air;
-                }
+                thisChunk.chunkData[i] = MeshUtils.BlockTypes.Air;
 
-                DestroyImmediate(hitChunk.GetComponent<MeshFilter>());
-                DestroyImmediate(hitChunk.GetComponent<MeshRenderer>());
-                DestroyImmediate(hitChunk.GetComponent<Collider>());
+                DestroyImmediate(thisChunk.GetComponent<MeshFilter>());
+                DestroyImmediate(thisChunk.GetComponent<MeshRenderer>());
+                DestroyImmediate(thisChunk.GetComponent<Collider>());
 
-                hitChunk.CreateChunk(hitChunk.location , false);
+                thisChunk.CreateChunk(thisChunk.location, false);
             }
 
         }
@@ -75,8 +66,9 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, 10))
             {
                 Vector3Int hitBlock = Vector3Int.RoundToInt(hit.point + (hit.normal / 2));
-                Chunk hitChunk = hit.collider.transform.GetComponent<Chunk>();
-                OnPlayerRightClick?.Invoke(hitBlock, hitChunk, ActiveBlockType);
+                Chunk thisChunk = hit.transform.GetComponent<Chunk>();
+
+                Signals.OnPlayerRightClick?.Invoke(hitBlock, thisChunk);
             }
 
         }
@@ -84,9 +76,8 @@ public class Player : MonoBehaviour
 
     public void SetBuildingBlockType()
     {
-        if(_input.mouseScrollY == 0) return;
+        if (_input.mouseScrollY == 0) return;
         ActiveBlockTypeIndex = _input.mouseScrollY > 0 ? (ActiveBlockTypeIndex - 1 + numberOfBlockTypesInHotbar) % numberOfBlockTypesInHotbar : (ActiveBlockTypeIndex + 1) % numberOfBlockTypesInHotbar;
-        ActiveBlockType = HotbarBlockTypes[ActiveBlockTypeIndex];
-        OnActiveBlockTypeChanged?.Invoke(ActiveBlockTypeIndex);
+        Signals.OnActiveBlockTypeChanged?.Invoke(ActiveBlockTypeIndex);
     }
 }

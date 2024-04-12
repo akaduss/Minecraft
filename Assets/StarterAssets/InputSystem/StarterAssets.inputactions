@@ -42,108 +42,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Left Click",
+                    "name": "LeftClick",
                     "type": "Button",
-                    "id": "c01a4d5b-d120-4d22-b0b6-707502744ca9",
+                    "id": "a7bdd7a0-871b-482f-bab5-745659091c70",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Right Click",
+                    "name": "RightClick",
                     "type": "Button",
-                    "id": "43173cf8-de76-406c-86ac-7f643e29029b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar0",
-                    "type": "Button",
-                    "id": "df107d9c-d622-4a43-99ad-b06cf078f2c9",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar1",
-                    "type": "Button",
-                    "id": "210f14d9-9489-4750-b2f8-7b1333362eff",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar2",
-                    "type": "Button",
-                    "id": "f4bb5942-ca1d-4259-96dd-d25ae61fec50",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar3",
-                    "type": "Button",
-                    "id": "cc8ec769-989e-4bf8-8e7e-5ac9912adc59",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar4",
-                    "type": "Button",
-                    "id": "6318ff59-820a-40d0-b572-1caf519cd977",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar5",
-                    "type": "Button",
-                    "id": "6e0d14d4-861c-4a5c-bac0-f73f3458f095",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar6",
-                    "type": "Button",
-                    "id": "4f287321-869b-4ffd-8f17-6fecb6c0b669",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar7",
-                    "type": "Button",
-                    "id": "1f8f65e3-f4a1-496f-9bbc-ac95f0bcc704",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar8",
-                    "type": "Button",
-                    "id": "c2fa9436-4796-4edd-84f3-13223c8ce743",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Hotbar9",
-                    "type": "Button",
-                    "id": "9ebfa012-e4c0-4346-af67-854fbdcb24b4",
+                    "id": "b60df384-39e6-4c78-8623-bad68ba385b1",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -151,12 +61,12 @@
                 },
                 {
                     "name": "MouseScroll",
-                    "type": "PassThrough",
-                    "id": "964197e5-0e45-41db-aedf-ab858b8a0518",
+                    "type": "Value",
+                    "id": "ff64748f-c74b-438e-b2c8-72731bc5a3d4",
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -338,139 +248,29 @@
                 },
                 {
                     "name": "",
-                    "id": "c9350a7a-c33d-4da3-8f24-78a32c2aca19",
+                    "id": "8110de7f-4c30-44f3-ab5d-0fef4aefed5f",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Left Click",
+                    "action": "LeftClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "caa2a4f7-f5ff-4786-8ad9-646f502b290e",
+                    "id": "df9a9798-c1e1-4b97-a72c-e9ba3a6908bd",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Right Click",
+                    "action": "RightClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "7df1df9e-2720-4eb3-b29d-26df06ad0dd5",
-                    "path": "<Keyboard>/0",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar0",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "af24d25b-ffcc-4ffe-b0b9-3c48263cf2ed",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar1",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bbffac52-a122-42eb-a16b-274d2a90b057",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar2",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "015cc0f0-3bfa-470c-bc62-59bc81fe7642",
-                    "path": "<Keyboard>/3",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar3",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8070de96-2903-4dbe-81be-f0fd1e65582d",
-                    "path": "<Keyboard>/4",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar4",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1f5008f0-c0c5-4a1b-8248-2f8b2f5881a3",
-                    "path": "<Keyboard>/5",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar5",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "48e44367-76fa-4f43-9799-0933c2fc02a9",
-                    "path": "<Keyboard>/6",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar6",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "b610dedf-6fff-4c6a-a2fd-07adf8d1b932",
-                    "path": "<Keyboard>/7",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar7",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f247a974-e15e-4c51-8259-2a4cb7a55ddf",
-                    "path": "<Keyboard>/8",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar8",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7d22e5a6-fc1e-4d8a-99ce-37027cf985de",
-                    "path": "<Keyboard>/9",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Hotbar9",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "5b74c143-dcfb-4d50-aa18-b261f09237b3",
+                    "id": "f66390d3-eb3c-47b9-adc1-ef0af240fdca",
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
                     "processors": "",

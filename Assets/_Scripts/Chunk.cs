@@ -14,11 +14,10 @@ public class Chunk : MonoBehaviour
     public int width = 2;
     public Block[,,] blocks;
     public MeshUtils.BlockTypes[] chunkData;
-    public MeshUtils.BlockTypes[] crackData;
     public MeshRenderer MeshRenderer;
     public NativeArray<Unity.Mathematics.Random> RandomArray { get; private set; }
 
-    public Vector3Int location;
+    public Vector3 location;
 
     // Flatten the 3D array into a 1D array
     // Flat[x + width * (y + depth * z)] = Original[x, y, z]
@@ -30,16 +29,14 @@ public class Chunk : MonoBehaviour
     private const float valuableProbability = 0.05f;
     private const float CoalProbability = 0.03f;
 
-    CalculateBlockTypeDataJob processBlockTypeDataJob;
-    JobHandle processBlockTypeDataJobHandle;
+    CalculateBlockTypeDataJob processPerlinDataJob;
+    JobHandle processPerlinJobHandle;
 
     private void BuildChunkData()
     {
         int totalSize = width * height * depth;
         chunkData = new MeshUtils.BlockTypes[totalSize];
-        crackData = new MeshUtils.BlockTypes[totalSize];
         NativeArray<MeshUtils.BlockTypes> chunkDataNative = new(chunkData, Allocator.Persistent);
-        NativeArray<MeshUtils.BlockTypes> crackDataNative = new(crackData, Allocator.Persistent);
         NativeArray<Unity.Mathematics.Random> randomArray = new(totalSize, Allocator.Persistent);
 
         for (int i = 0; i < totalSize; i++)
@@ -47,10 +44,10 @@ public class Chunk : MonoBehaviour
             randomArray[i] = new Unity.Mathematics.Random((uint)UnityEngine.Random.Range(0, int.MaxValue));
         }
 
-        processBlockTypeDataJob = new()
+
+        processPerlinDataJob = new()
         {
             chunkData = chunkDataNative,
-            crackData = crackDataNative,
             width = width,
             height = height,
             location = location,
@@ -64,15 +61,12 @@ public class Chunk : MonoBehaviour
             cavePerlinSettings = World.cavePerlinSettings
         };
 
-        processBlockTypeDataJobHandle = processBlockTypeDataJob.Schedule(chunkData.Length, 64);
-        processBlockTypeDataJobHandle.Complete();
+        processPerlinJobHandle = processPerlinDataJob.Schedule(totalSize, 64);
+        processPerlinJobHandle.Complete();
 
-        processBlockTypeDataJob.chunkData.CopyTo(chunkData);
-        processBlockTypeDataJob.crackData.CopyTo(crackData);
+        processPerlinDataJob.chunkData.CopyTo(chunkData);
         chunkDataNative.Dispose();
-        crackDataNative.Dispose();
         randomArray.Dispose();
-        
     }
 
     private static Vector3 GetBlockPosition(int index, int width, int height, Vector3 location)
@@ -191,7 +185,7 @@ public class Chunk : MonoBehaviour
             return MeshUtils.BlockTypes.Bedrock;
         }
     }
-    public void CreateChunk(Vector3Int position, bool rebuild = true)
+    public void CreateChunk(Vector3 position, bool rebuildBlocks = true)
     {
         location = position;
 
@@ -200,7 +194,7 @@ public class Chunk : MonoBehaviour
         mr.material = blockAtlas;
         MeshRenderer = mr;
         blocks = new Block[width, height, depth];
-        if (rebuild)
+        if (rebuildBlocks)
         {
             BuildChunkData();
         }
@@ -211,9 +205,11 @@ public class Chunk : MonoBehaviour
         int meshCount = width * height * depth;
         int m = 0;
 
-        ProcessMeshDataJob jobs = new();
-        jobs.triangleStart = new NativeArray<int>(meshCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-        jobs.vertexStart = new NativeArray<int>(meshCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+        ProcessMeshDataJob jobs = new()
+        {
+            vertexStart = new NativeArray<int>(meshCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory),
+            triangleStart = new NativeArray<int>(meshCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory)
+        };
 
         for (int z = 0; z < depth; z++)
         {
@@ -221,7 +217,7 @@ public class Chunk : MonoBehaviour
             {
                 for (int x = 0; x < width; x++)
                 {
-                    blocks[x, y, z] = new(new Vector3(x, y, z) + location, chunkData[x + width * (y + depth * z)], this, crackData[x + width * (y + depth * z)]);
+                    blocks[x,y,z] = new(new Vector3(x, y, z) + location, chunkData[x + width * (y + depth * z) ], this );
                     if (blocks[x, y, z].mesh == null) continue;
 
                     inputMeshes.Add(blocks[x, y, z].mesh);
@@ -247,8 +243,7 @@ public class Chunk : MonoBehaviour
         jobs.outputMeshData.SetVertexBufferParams(vertexStart, 
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32),
             new VertexAttributeDescriptor(VertexAttribute.Normal, stream: 1),
-            new VertexAttributeDescriptor(VertexAttribute.TexCoord0, stream: 2),
-            new VertexAttributeDescriptor(VertexAttribute.TexCoord1, stream: 3)
+            new VertexAttributeDescriptor(VertexAttribute.TexCoord0, stream: 2)
             );
 
         JobHandle jobHandle = jobs.Schedule(inputMeshes.Count, 4);
@@ -271,15 +266,16 @@ public class Chunk : MonoBehaviour
         jobs.outputMeshData.subMeshCount = 1;
         jobs.outputMeshData.SetSubMesh(0, subMeshDescriptor);
 
-        Mesh.ApplyAndDisposeWritableMeshData(outputMeshData, newMesh);
+        Mesh.ApplyAndDisposeWritableMeshData(outputMeshData, newMesh, MeshUpdateFlags.DontRecalculateBounds);
         jobs.meshDataArray.Dispose();
+
         jobs.vertexStart.Dispose();
         jobs.triangleStart.Dispose();
 
         newMesh.RecalculateBounds();
         mf.mesh = newMesh;
-        var collider = gameObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = mf.mesh;
+        gameObject.AddComponent<MeshCollider>().sharedMesh = mf.mesh;
+
     }
 
     [BurstCompile]
@@ -303,29 +299,23 @@ public class Chunk : MonoBehaviour
             NativeArray<float3> normals = new(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
             data.GetNormals(normals.Reinterpret<Vector3>());
 
-            var uvs = new NativeArray<float3>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            NativeArray<float3> uvs = new(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
             data.GetUVs(0, uvs.Reinterpret<Vector3>());
 
-            var uvs2 = new NativeArray<float3>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-            data.GetUVs(1, uvs2.Reinterpret<Vector3>());
-
-            var outputVerts = outputMeshData.GetVertexData<Vector3>();
-            var outputNormals = outputMeshData.GetVertexData<Vector3>(stream: 1);
-            var outputUVs = outputMeshData.GetVertexData<Vector3>(stream: 2);
-            var outputUVs2 = outputMeshData.GetVertexData<Vector3>(stream: 3);
+            NativeArray<Vector3> outputVertices = outputMeshData.GetVertexData<Vector3>();
+            NativeArray<Vector3> outputNormals = outputMeshData.GetVertexData<Vector3>(stream: 1);
+            NativeArray<Vector3> outputUVs = outputMeshData.GetVertexData<Vector3>(stream: 2);
 
             for (int i = 0; i < vertexCount; i++)
             {
-                outputVerts[i + vStart] = vertices[i];
-                outputNormals[i + vStart] = normals[i];
-                outputUVs[i + vStart] = uvs[i];
-                outputUVs2[i + vStart] = uvs2[i];
+                outputVertices[vStart + i] = vertices[i];
+                outputNormals[vStart + i] = normals[i];
+                outputUVs[vStart + i] = uvs[i];
             }
 
             vertices.Dispose();
             normals.Dispose();
             uvs.Dispose();
-            uvs2.Dispose();
 
             var triStart = triangleStart[index];
             var triCount = data.GetSubMesh(0).indexCount;
@@ -333,23 +323,23 @@ public class Chunk : MonoBehaviour
 
             if (data.indexFormat == IndexFormat.UInt16)
             {
-                var tris = data.GetIndexData<ushort>();
+                NativeArray<ushort> tris = data.GetIndexData<ushort>();
                 for (int i = 0; i < triCount; i++)
                 {
                     outputTris[triStart + i] = vStart + tris[i];
                 }
 
-                //tris.Dispose();
+                tris.Dispose();
             }
             else
             {
-                var tris = data.GetIndexData<int>();
+                NativeArray<int> tris = data.GetIndexData<int>();
                 for (int i = 0; i < triCount; i++)
                 {
                     outputTris[triStart + i] = vStart + tris[i];
                 }
 
-                //tris.Dispose();
+                tris.Dispose();
             }
 
         }
@@ -359,7 +349,6 @@ public class Chunk : MonoBehaviour
     struct CalculateBlockTypeDataJob : IJobParallelFor
     {
         public NativeArray<MeshUtils.BlockTypes> chunkData;
-        public NativeArray<MeshUtils.BlockTypes> crackData;
         public int width;
         public int height;
         public Vector3 location;
@@ -387,7 +376,6 @@ public class Chunk : MonoBehaviour
             float random = randomArray[index].NextFloat(1);
             MeshUtils.BlockTypes blockType = DetermineBlockType(blockPosition, random, surfaceHeight, stoneHeight, ironHeight, valuableHeight, diamondHeight, bedrockHeight, digCave, cavePerlinSettings.drawCutOff, diamondPerlinSettings.probability);
             chunkData[index] = blockType;
-            crackData[index] = MeshUtils.BlockTypes.Crack1;
         }
     }
 

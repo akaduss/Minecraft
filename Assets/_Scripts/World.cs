@@ -6,18 +6,18 @@ using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
-    public Vector3Int WorldDimensions = new(5, 7, 5);
-    public Vector3Int ExtraWorldDimensions = new(5, 7, 5);
-    public Vector3Int ChunkDimensions = new(10, 10, 10);
+    public static Vector3Int WorldDimensions = new(3, 9, 3);
+    public static Vector3Int ExtraWorldDimensions = new(1, 9, 1);
+    public static Vector3Int ChunkDimensions = new(10, 10, 10);
     public GameObject ChunkPrefab;
     public GameObject PlayerPrefab;
     public Slider LoadingBarSlider;
-    public Dictionary<Vector3Int, Chunk> chunks = new();
     
     private int playerHeightOffset = 1;
     private int drawRadius = 3;
     private HashSet<Vector3Int> chunkPositions = new();
     private HashSet<Vector2Int> chunkColumns = new();
+    private Dictionary<Vector3Int, Chunk> chunks = new();
     private Queue<IEnumerator> chunksQueue = new();
     private Vector3Int lastBuildPosition = new();
     private WaitForSeconds wait = new(0.5f);
@@ -60,9 +60,18 @@ public class World : MonoBehaviour
         valuablesPerlinSettings = new PerlinSettings(valuablesGraph.scale, valuablesGraph.octaves, valuablesGraph.heightScale, valuablesGraph.heightOffset, valuablesGraph.probability);
         diamondPerlinSettings = new PerlinSettings(diamondGraph.scale, diamondGraph.octaves, diamondGraph.heightScale, diamondGraph.heightOffset, diamondGraph.probability);
         bedrockPerlinSettings = new PerlinSettings(bedrockGraph.scale, bedrockGraph.octaves, bedrockGraph.heightScale, bedrockGraph.heightOffset, bedrockGraph.probability);
-        Player.OnPlayerRightClick += AddBlockToChunk;
+
+        Signals.OnActiveBlockTypeChanged += SetActiveBlockType;
+        Signals.OnPlayerRightClick += UpdateChunk;
 
         StartCoroutine(BuildWorld());
+    }
+
+
+    MeshUtils.BlockTypes activeBlockType = MeshUtils.BlockTypes.GrassSide;
+    public void SetActiveBlockType(int index)
+    {
+        activeBlockType = (MeshUtils.BlockTypes)index;
     }
 
     private IEnumerator UpdateWorld()
@@ -72,11 +81,10 @@ public class World : MonoBehaviour
             if((lastBuildPosition - PlayerPrefab.transform.position).magnitude > ChunkDimensions.x)
             {
                 lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
-                int posX = (int)(PlayerPrefab.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
-                int posZ = (int)(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
+                int posX = Mathf.FloorToInt(PlayerPrefab.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
+                int posZ = Mathf.FloorToInt(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
                 chunksQueue.Enqueue(BuildRecursiveWorld(posX, posZ, drawRadius));
                 chunksQueue.Enqueue(HideColumns(posX, posZ));
-
             }
             yield return wait;
         }
@@ -155,6 +163,7 @@ public class World : MonoBehaviour
         {
             PlayerPrefab.SetActive(true);
             LoadingBarSlider.gameObject.SetActive(false);
+
         }
 
         int xpos = WorldDimensions.x * ChunkDimensions.x / 2;
@@ -211,7 +220,7 @@ public class World : MonoBehaviour
         yield return null;
     }
 
-    private void HideChunkColumn(int x, int z)
+    public void HideChunkColumn(int x, int z)
     {
         for(int y = 0; y < WorldDimensions.y; y++)
         {
@@ -223,65 +232,72 @@ public class World : MonoBehaviour
         }
     }
 
-    private void AddBlockToChunk(Vector3Int hitBlock, Chunk chunkToUpdate, MeshUtils.BlockTypes blockTypeToAdd)
+    public void UpdateChunk(Vector3Int hitBlock, Chunk thisChunk)
     {
-        int bx = hitBlock.x - chunkToUpdate.location.x;
-        int by = hitBlock.y - chunkToUpdate.location.y;
-        int bz = hitBlock.z - chunkToUpdate.location.z;
+        int bx = (int)(hitBlock.x - thisChunk.location.x);
+        int by = (int)(hitBlock.y - thisChunk.location.y);
+        int bz = (int)(hitBlock.z - thisChunk.location.z);
 
         Vector3Int neighbour;
         if (bx == ChunkDimensions.x)
         {
-            neighbour = new Vector3Int(chunkToUpdate.location.x + ChunkDimensions.x, chunkToUpdate.location.y, chunkToUpdate.location.z);
-            chunkToUpdate = chunks[neighbour];
+            neighbour = new Vector3Int((int)thisChunk.location.x + ChunkDimensions.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
             bx = 0;
         }
         else if (bx == -1)
         {
-            neighbour = new Vector3Int(chunkToUpdate.location.x - ChunkDimensions.x, chunkToUpdate.location.y, chunkToUpdate.location.z);
-            chunkToUpdate = chunks[neighbour];
+            neighbour = new Vector3Int((int)thisChunk.location.x - ChunkDimensions.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
             bx = ChunkDimensions.x - 1;
         }
         else if (by == ChunkDimensions.y)
         {
-            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y + ChunkDimensions.y, chunkToUpdate.location.z);
-            chunkToUpdate = chunks[neighbour];
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y + ChunkDimensions.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
             by = 0;
         }
         else if (by == -1)
         {
-            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y - ChunkDimensions.y, chunkToUpdate.location.z);
-            chunkToUpdate = chunks[neighbour];
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y - ChunkDimensions.y,
+                                         (int)thisChunk.location.z);
+            thisChunk = chunks[neighbour];
             by = ChunkDimensions.y - 1;
         }
         else if (bz == ChunkDimensions.z)
         {
-            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y, chunkToUpdate.location.z + ChunkDimensions.z);
-            chunkToUpdate = chunks[neighbour];
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z + ChunkDimensions.z);
+            thisChunk = chunks[neighbour];
             bz = 0;
         }
         else if (bz == -1)
         {
-            neighbour = new Vector3Int(chunkToUpdate.location.x, chunkToUpdate.location.y, chunkToUpdate.location.z - ChunkDimensions.z);
-            chunkToUpdate = chunks[neighbour];
+            neighbour = new Vector3Int((int)thisChunk.location.x,
+                                        (int)thisChunk.location.y,
+                                         (int)thisChunk.location.z - ChunkDimensions.z);
+            thisChunk = chunks[neighbour];
             bz = ChunkDimensions.z - 1;
         }
 
+
         int i = bx + ChunkDimensions.x * (by + ChunkDimensions.z * bz);
 
-        chunkToUpdate.chunkData[i] = blockTypeToAdd;
-        chunkToUpdate.crackData[i] = MeshUtils.BlockTypes.Crack1;
+        thisChunk.chunkData[i] = activeBlockType;
 
-        RedrawChunk(chunkToUpdate);
+        DestroyImmediate(thisChunk.GetComponent<MeshFilter>());
+        DestroyImmediate(thisChunk.GetComponent<MeshRenderer>());
+        DestroyImmediate(thisChunk.GetComponent<Collider>());
 
-    }
-
-    void RedrawChunk(Chunk c)
-    {
-        DestroyImmediate(c.GetComponent<MeshFilter>());
-        DestroyImmediate(c.GetComponent<MeshRenderer>());
-        DestroyImmediate(c.GetComponent<Collider>());
-        c.CreateChunk(c.location, false);
+        thisChunk.CreateChunk(thisChunk.location, false);
     }
 
 
