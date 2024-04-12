@@ -308,7 +308,7 @@ public class Chunk : MonoBehaviour
             data.GetUVs(0, uvs.Reinterpret<Vector3>());
 
             NativeArray<float3> uv2s = new(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-            data.GetUVs(1, uvs.Reinterpret<Vector3>());
+            data.GetUVs(1, uv2s.Reinterpret<Vector3>());
 
             NativeArray<Vector3> outputVertices = outputMeshData.GetVertexData<Vector3>();
             NativeArray<Vector3> outputNormals = outputMeshData.GetVertexData<Vector3>(stream: 1);
