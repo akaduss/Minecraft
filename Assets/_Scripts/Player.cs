@@ -71,6 +71,7 @@ public class Player : MonoBehaviour
                 int bx = (int)(hitBlock.x - thisChunk.location.x);
                 int by = (int)(hitBlock.y - thisChunk.location.y);
                 int bz = (int)(hitBlock.z - thisChunk.location.z);
+
                 int i = bx + World.ChunkDimensions.x * (by + World.ChunkDimensions.z * bz);
 
                 thisChunk.chunkData[i] = HotbarBlockTypes[ActiveBlockTypeIndex];

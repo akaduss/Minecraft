@@ -15,7 +15,6 @@ public static class MeshUtils
         Bottom, Left, Right, Top, Front, Back
     }
 
-
     private static UvCoordinates sandUVcoords = Utils.CalculateAtlasPosition(1, 2);
     private static UvCoordinates grassTop = Utils.CalculateAtlasPosition(9, 2);
     private static UvCoordinates grassSideUVcoords = Utils.CalculateAtlasPosition(0, 3);
@@ -36,8 +35,6 @@ public static class MeshUtils
     private static UvCoordinates logUVCoords = Utils.CalculateAtlasPosition(1,4);
     private static UvCoordinates plankUVCoords = Utils.CalculateAtlasPosition(0,4);
     private static UvCoordinates obsidianUVCoords = Utils.CalculateAtlasPosition(2,5);
-
-
 
     public static Vector2[,] BlockUVs =
     {

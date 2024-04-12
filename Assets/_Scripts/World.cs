@@ -75,11 +75,12 @@ public class World : MonoBehaviour
                 int posZ = Mathf.FloorToInt(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
                 chunksQueue.Enqueue(BuildRecursiveWorld(posX, posZ, drawRadius));
                 chunksQueue.Enqueue(HideColumns(posX, posZ));
-
             }
             yield return wait;
         }
     }
+
+    private void 
 
     private IEnumerator BuildQ()
     {
@@ -168,7 +169,7 @@ public class World : MonoBehaviour
 
         lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
         StartCoroutine(BuildQ());
-        //StartCoroutine(UpdateWorld());
+        StartCoroutine(UpdateWorld());
         StartCoroutine(BuildExtraWorld());
     }
 
