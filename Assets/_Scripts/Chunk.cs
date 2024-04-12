@@ -272,15 +272,15 @@ public class Chunk : MonoBehaviour
         jobs.outputMeshData.subMeshCount = 1;
         jobs.outputMeshData.SetSubMesh(0, subMeshDescriptor);
 
-        Mesh.ApplyAndDisposeWritableMeshData(outputMeshData, newMesh, MeshUpdateFlags.DontRecalculateBounds);
+        Mesh.ApplyAndDisposeWritableMeshData(outputMeshData, newMesh);
         jobs.meshDataArray.Dispose();
         jobs.vertexStart.Dispose();
         jobs.triangleStart.Dispose();
 
         newMesh.RecalculateBounds();
         mf.mesh = newMesh;
-        gameObject.AddComponent<MeshCollider>().sharedMesh = mf.mesh;
-
+        MeshCollider collider = gameObject.AddComponent<MeshCollider>();
+        collider.sharedMesh = mf.mesh;
     }
 
     [BurstCompile]
@@ -304,29 +304,29 @@ public class Chunk : MonoBehaviour
             NativeArray<float3> normals = new(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
             data.GetNormals(normals.Reinterpret<Vector3>());
 
-            NativeArray<float3> uvs = new(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            var uvs = new NativeArray<float3>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
             data.GetUVs(0, uvs.Reinterpret<Vector3>());
 
-            NativeArray<float3> uv2s = new(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
-            data.GetUVs(1, uv2s.Reinterpret<Vector3>());
+            var uvs2 = new NativeArray<float3>(vertexCount, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
+            data.GetUVs(1, uvs2.Reinterpret<Vector3>());
 
-            NativeArray<Vector3> outputVertices = outputMeshData.GetVertexData<Vector3>();
-            NativeArray<Vector3> outputNormals = outputMeshData.GetVertexData<Vector3>(stream: 1);
-            NativeArray<Vector3> outputUVs = outputMeshData.GetVertexData<Vector3>(stream: 2);
-            NativeArray<Vector3> outputUV2s = outputMeshData.GetVertexData<Vector3>(stream: 3);
+            var outputVerts = outputMeshData.GetVertexData<Vector3>();
+            var outputNormals = outputMeshData.GetVertexData<Vector3>(stream: 1);
+            var outputUVs = outputMeshData.GetVertexData<Vector3>(stream: 2);
+            var outputUVs2 = outputMeshData.GetVertexData<Vector3>(stream: 3);
 
             for (int i = 0; i < vertexCount; i++)
             {
-                outputVertices[vStart + i] = vertices[i];
-                outputNormals[vStart + i] = normals[i];
-                outputUVs[vStart + i] = uvs[i];
-                outputUV2s[vStart + i] = uv2s[i];
+                outputVerts[i + vStart] = vertices[i];
+                outputNormals[i + vStart] = normals[i];
+                outputUVs[i + vStart] = uvs[i];
+                outputUVs2[i + vStart] = uvs2[i];
             }
 
             vertices.Dispose();
             normals.Dispose();
             uvs.Dispose();
-            uv2s.Dispose();
+            uvs2.Dispose();
 
             var triStart = triangleStart[index];
             var triCount = data.GetSubMesh(0).indexCount;
@@ -334,29 +334,29 @@ public class Chunk : MonoBehaviour
 
             if (data.indexFormat == IndexFormat.UInt16)
             {
-                NativeArray<ushort> tris = data.GetIndexData<ushort>();
+                var tris = data.GetIndexData<ushort>();
                 for (int i = 0; i < triCount; i++)
                 {
                     outputTris[triStart + i] = vStart + tris[i];
                 }
 
-                tris.Dispose();
+                //tris.Dispose();
             }
             else
             {
-                NativeArray<int> tris = data.GetIndexData<int>();
+                var tris = data.GetIndexData<int>();
                 for (int i = 0; i < triCount; i++)
                 {
                     outputTris[triStart + i] = vStart + tris[i];
                 }
 
-                tris.Dispose();
+                //tris.Dispose();
             }
 
         }
     }
 
-    [BurstCompile]
+    //[BurstCompile]
     struct CalculateBlockTypeDataJob : IJobParallelFor
     {
         public NativeArray<MeshUtils.BlockTypes> chunkData;

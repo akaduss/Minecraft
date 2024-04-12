@@ -50,10 +50,16 @@ public class Player : MonoBehaviour
                 int bz = hitBlock.z - hitChunk.location.z;
                 int i = bx + hitChunk.width * (by + hitChunk.depth * bz);
 
-                hitChunk.chunkData[i] = MeshUtils.BlockTypes.Air;
+                hitChunk.crackData[i]++;
+                if (hitChunk.crackData[i] == MeshUtils.BlockTypes.None + MeshUtils.blockTypeHealths[(int)hitChunk.chunkData[i]])
+                {
+                    hitChunk.chunkData[i] = MeshUtils.BlockTypes.Air;
+                }
+
                 DestroyImmediate(hitChunk.GetComponent<MeshFilter>());
                 DestroyImmediate(hitChunk.GetComponent<MeshRenderer>());
                 DestroyImmediate(hitChunk.GetComponent<Collider>());
+
                 hitChunk.CreateChunk(hitChunk.location , false);
             }
 

@@ -7,16 +7,16 @@ public static class MeshUtils
 {
     public enum BlockTypes
     {
-        None, GrassTop, GrassSide, Dirt, Stone, Water, Air, Coal, Iron, Gold, Diamond, Redstone, Lapis, Bedrock, Cobblestone, Wood, Plank, Crafting, Furnace, Glass, Brick, Obsidian, Crack1, Crack2, Crack3, Crack4, Crack5, Crack6, Crack7, Crack8, Crack9, Crack10
+        GrassTop, GrassSide, Dirt, Stone, Water, Coal, Iron, Gold, Diamond, Redstone, Lapis, Bedrock, Cobblestone, Wood, Plank, Crafting, Furnace, Glass, Brick, Obsidian,Air, None, Crack1, Crack2, Crack3, Crack4, Crack5, Crack6, Crack7, Crack8, Crack9, Crack10
     }
+
+    public static int[] blockTypeHealths = { 2,2,1,3,1,4,6,6,7,5,5,-1,2,3,2,2,2,1,3,9,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
 
     public enum BlockSide
     {
         Bottom, Left, Right, Top, Front, Back
     }
 
-
-    //private static UvCoordinates sandUVcoords = Utils.CalculateAtlasPosition(1, 2);
     private static UvCoordinates grassTopUVcoords = Utils.CalculateAtlasPosition(10, 11);
     private static UvCoordinates grassSideUVcoords = Utils.CalculateAtlasPosition(0, 3);
     private static UvCoordinates dirtUVcoords = Utils.CalculateAtlasPosition(0, 2);

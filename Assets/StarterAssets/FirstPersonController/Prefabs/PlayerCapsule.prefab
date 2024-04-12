@@ -385,4 +385,4 @@ MonoBehaviour:
   ActiveBlockTypeIndex: 0
   numberOfBlockTypesInHotbar: 0
   HotbarBlockTypes: 0100000002000000030000000d0000000e0000000f0000001000000011000000120000001300000014000000
-  ActiveBlockType: 0
+  ActiveBlockType: 1

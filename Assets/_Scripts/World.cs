@@ -6,18 +6,18 @@ using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
-    public Vector3Int WorldDimensions = new(20, 7, 20);
-    public Vector3Int ExtraWorldDimensions = new(10, 7, 10);
+    public Vector3Int WorldDimensions = new(5, 7, 5);
+    public Vector3Int ExtraWorldDimensions = new(5, 7, 5);
     public Vector3Int ChunkDimensions = new(10, 10, 10);
     public GameObject ChunkPrefab;
     public GameObject PlayerPrefab;
     public Slider LoadingBarSlider;
+    public Dictionary<Vector3Int, Chunk> chunks = new();
     
     private int playerHeightOffset = 1;
     private int drawRadius = 3;
     private HashSet<Vector3Int> chunkPositions = new();
     private HashSet<Vector2Int> chunkColumns = new();
-    public Dictionary<Vector3Int, Chunk> chunks = new();
     private Queue<IEnumerator> chunksQueue = new();
     private Vector3Int lastBuildPosition = new();
     private WaitForSeconds wait = new(0.5f);
@@ -72,8 +72,8 @@ public class World : MonoBehaviour
             if((lastBuildPosition - PlayerPrefab.transform.position).magnitude > ChunkDimensions.x)
             {
                 lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
-                int posX = Mathf.FloorToInt(PlayerPrefab.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
-                int posZ = Mathf.FloorToInt(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
+                int posX = (int)(PlayerPrefab.transform.position.x / ChunkDimensions.x) * ChunkDimensions.x;
+                int posZ = (int)(PlayerPrefab.transform.position.z / ChunkDimensions.z) * ChunkDimensions.z;
                 chunksQueue.Enqueue(BuildRecursiveWorld(posX, posZ, drawRadius));
                 chunksQueue.Enqueue(HideColumns(posX, posZ));
 
@@ -155,7 +155,6 @@ public class World : MonoBehaviour
         {
             PlayerPrefab.SetActive(true);
             LoadingBarSlider.gameObject.SetActive(false);
-
         }
 
         int xpos = WorldDimensions.x * ChunkDimensions.x / 2;
@@ -169,7 +168,7 @@ public class World : MonoBehaviour
 
         lastBuildPosition = Vector3Int.CeilToInt(PlayerPrefab.transform.position);
         StartCoroutine(BuildQ());
-        StartCoroutine(UpdateWorld());
+        //StartCoroutine(UpdateWorld());
         StartCoroutine(BuildExtraWorld());
     }
 
@@ -198,7 +197,6 @@ public class World : MonoBehaviour
             }
         }
     }
-
 
     private IEnumerator HideColumns(int x, int z)
     {
@@ -272,12 +270,18 @@ public class World : MonoBehaviour
         int i = bx + ChunkDimensions.x * (by + ChunkDimensions.z * bz);
 
         chunkToUpdate.chunkData[i] = blockTypeToAdd;
+        chunkToUpdate.crackData[i] = MeshUtils.BlockTypes.Crack1;
 
-        DestroyImmediate(chunkToUpdate.GetComponent<MeshFilter>());
-        DestroyImmediate(chunkToUpdate.GetComponent<MeshRenderer>());
-        DestroyImmediate(chunkToUpdate.GetComponent<Collider>());
-        chunkToUpdate.CreateChunk(chunkToUpdate.location, false);
+        RedrawChunk(chunkToUpdate);
 
+    }
+
+    void RedrawChunk(Chunk c)
+    {
+        DestroyImmediate(c.GetComponent<MeshFilter>());
+        DestroyImmediate(c.GetComponent<MeshRenderer>());
+        DestroyImmediate(c.GetComponent<Collider>());
+        c.CreateChunk(c.location, false);
     }
 
 
