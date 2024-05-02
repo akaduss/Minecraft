@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
         ActiveBlockTypeIndex = 0;
         _input = GetComponent<StarterAssetsInputs>();
         Signals.OnActiveBlockTypeChanged?.Invoke(ActiveBlockTypeIndex);
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
